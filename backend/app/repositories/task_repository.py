@@ -63,6 +63,7 @@ def update_task(
     status: str | None,
     priority: str | None,
     due_at: datetime | None,
+    due_at_provided: bool,
 ) -> Task:
     if title is not None:
         task.title = title
@@ -72,7 +73,8 @@ def update_task(
         task.status = status
     if priority is not None:
         task.priority = priority
-    task.due_at = due_at
+    if due_at_provided:
+        task.due_at = due_at
 
     db.add(task)
     db.commit()
