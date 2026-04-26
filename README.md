@@ -66,6 +66,14 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - schema task untuk create, update, detail, dan summary
 - router backend sudah mengekspose modul `tasks`
 
+### Batch 8
+
+- document upload dan metadata persistence
+- model dan migration `documents`
+- local storage untuk file upload awal
+- endpoint list/upload/detail dokumen per workspace
+- seeded demo documents agar overview workspace punya data dokumen nyata
+
 ## Struktur Folder
 
 ```text
@@ -95,6 +103,7 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - `backend`: FastAPI
 - `worker`: Python + requests
 - `database`: PostgreSQL + SQLAlchemy + Alembic
+- `storage`: local file storage baseline
 - `cache/queue`: Redis
 
 Pilihan ini cukup realistis untuk proyek mahasiswa karena ringan, umum dipakai, dan mudah dikembangkan bertahap.
@@ -122,6 +131,7 @@ alembic upgrade head
 - auth login: `http://localhost:8000/api/v1/auth/login`
 - workspace overview: `http://localhost:8000/api/v1/workspaces/overview`
 - task list demo: `http://localhost:8000/api/v1/workspaces/ws-user-demo/tasks`
+- document list demo: `http://localhost:8000/api/v1/workspaces/ws-user-demo/documents`
 
 5. Gunakan akun demo lokal:
 
@@ -138,7 +148,7 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint health, auth, workspace, task CRUD, repository layer, dan persistence PostgreSQL awal
+- `backend/`: endpoint health, auth, workspace, task CRUD, document upload, repository layer, dan persistence PostgreSQL awal
 - `worker/`: background loop awal untuk heartbeat backend
 - `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
@@ -159,11 +169,14 @@ docker compose down
 - `GET /api/v1/tasks/{task_id}`
 - `PUT /api/v1/tasks/{task_id}`
 - `DELETE /api/v1/tasks/{task_id}`
+- `GET /api/v1/workspaces/{workspace_id}/documents`
+- `POST /api/v1/workspaces/{workspace_id}/documents`
+- `GET /api/v1/documents/{document_id}`
 
 ## Prioritas Batch Berikutnya
 
-- document upload dan metadata persistence
 - activity log dasar
 - scheduler reminder harian
 - agent run history
+- document retrieval context
 - migrasi token ringan ke JWT standar bila dibutuhkan
