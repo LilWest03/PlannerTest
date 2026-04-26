@@ -1,70 +1,97 @@
 # AI Agent Workspace 24/7 untuk Mahasiswa
 
-PlannerTest adalah scaffold awal untuk membangun workspace AI agent yang membantu mahasiswa mengelola tugas, jadwal, riset, catatan, dan automasi produktivitas secara 24/7.
+Scaffold awal untuk proyek workspace berbasis AI agent yang membantu mahasiswa mengelola tugas, dokumen, jadwal, deadline, dan alur kerja belajar secara terstruktur.
 
-## Tujuan awal
+## Tujuan Repositori
 
-- Menyediakan struktur monorepo yang rapi untuk frontend, backend, worker, dokumentasi, infrastruktur, dan script operasional.
-- Memisahkan layanan interaktif, API, dan background worker sejak awal.
-- Menyediakan konfigurasi lokal berbasis Docker Compose agar mudah dikembangkan ulang oleh kontributor.
-- Menjaga perubahan awal tetap kecil, reviewable, dan tidak mengunci pilihan framework terlalu dini.
+Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem:
 
-## Struktur folder
+- modular dan mudah dikembangkan
+- realistis untuk MVP tugas akhir atau skripsi
+- aman untuk operasi penting dengan human-in-the-loop
+- mudah diobservasi melalui log, audit trail, dan status task
+
+## Scope Batch 1
+
+Batch pertama berfokus pada bootstrap struktur proyek agar review awal mudah dilakukan:
+
+- penataan folder utama
+- dokumentasi dasar proyek
+- contoh konfigurasi environment
+- docker compose untuk environment lokal
+- placeholder per modul agar arah pengembangan jelas
+
+Framework aplikasi inti belum dipasang pada batch ini. Tujuannya agar perubahan awal tetap kecil, jelas, dan mudah direview.
+
+## Struktur Folder
 
 ```text
 .
-├── backend/        # API service dan business logic
-├── docs/           # Dokumentasi produk, arsitektur, dan keputusan teknis
-├── frontend/       # Web/mobile frontend workspace mahasiswa
-├── infra/          # Konfigurasi infrastruktur dan deployment
-├── scripts/        # Helper script pengembangan lokal
-├── worker/         # Background jobs, scheduler, dan agent runtime
-├── .env.example    # Contoh konfigurasi environment
+├── backend/
+├── docs/
+├── frontend/
+├── infra/
+├── scripts/
+├── worker/
+├── .env.example
 └── docker-compose.yml
 ```
 
-## Komponen awal
+## Gambaran Arsitektur Awal
 
-- **Frontend**: antarmuka workspace mahasiswa untuk agenda, tugas, catatan, dan interaksi AI agent.
-- **Backend**: API utama untuk autentikasi, data mahasiswa, integrasi, dan orkestrasi agent.
-- **Worker**: proses background untuk reminder, sinkronisasi, agent task execution, dan job terjadwal.
-- **Infra**: tempat konfigurasi deployment, database, queue, observability, dan IaC.
-- **Docs**: dokumentasi arsitektur, product notes, dan runbook.
+- `frontend/`: dashboard mahasiswa untuk workspace, task, dokumen, dan status agent
+- `backend/`: API utama, auth, workspace orchestration, dan business logic
+- `worker/`: background jobs untuk scheduler, indexing dokumen, dan task agent asinkron
+- `docs/`: catatan arsitektur, scope MVP, dan dokumentasi teknis
+- `infra/`: kebutuhan deployment dan infrastruktur pendukung
+- `scripts/`: helper script untuk pengembangan lokal
 
-## Menjalankan lokal
+## Rencana Evolusi Bertahap
 
-1. Salin konfigurasi environment:
+### MVP
 
-   ```bash
-   cp .env.example .env
-   ```
+- autentikasi pengguna
+- dashboard workspace dasar
+- manajemen task dan deadline
+- unggah dan pemrosesan dokumen sederhana
+- scheduler task agent dasar
 
-2. Jalankan service lokal:
+### Versi Menengah
 
-   ```bash
-   docker compose up --build
-   ```
+- retrieval context dan memory per workspace
+- vector search untuk dokumen kuliah
+- notifikasi deadline dan reminder
+- observability yang lebih lengkap
 
-3. Atau gunakan helper script:
+### Production-Oriented
 
-   ```bash
-   ./scripts/dev-up.sh
-   ./scripts/dev-down.sh
-   ```
+- multi-agent orchestration yang lebih matang
+- role dan permission yang lebih rinci
+- isolasi workload yang lebih baik
+- monitoring, retry policy, dan audit trail penuh
 
-> Catatan: batch scaffold ini belum memasang framework aplikasi penuh. Service Docker masih berupa placeholder agar struktur repo bisa direview lebih dulu.
+## Menjalankan Environment Lokal
 
-## Prinsip pengembangan
+1. Salin `.env.example` menjadi `.env`
+2. Tinjau nilai environment sesuai kebutuhan lokal
+3. Jalankan docker compose:
 
-- Buat perubahan kecil dan mudah direview.
-- Jangan commit secret atau credential ke repo.
-- Dokumentasikan keputusan teknis penting di `docs/`.
-- Pastikan setiap service punya README lokal ketika mulai diimplementasikan.
+```bash
+docker compose up -d
+```
 
-## Roadmap scaffold berikutnya
+4. Hentikan service:
 
-- Pilih stack frontend, misalnya Next.js atau Vite.
-- Pilih stack backend, misalnya FastAPI, Express, atau NestJS.
-- Tambahkan runtime worker dan queue.
-- Tambahkan database lokal dan migration strategy.
-- Tambahkan linting, formatting, testing, dan CI.
+```bash
+docker compose down
+```
+
+Catatan: pada batch ini service masih berupa fondasi environment dan placeholder command. Implementasi aplikasi nyata akan ditambahkan pada batch berikutnya.
+
+## Prioritas Batch Berikutnya
+
+- scaffold aplikasi `frontend`
+- scaffold API `backend`
+- scaffold job runner `worker`
+- definisi MVP yang lebih rinci pada `docs/`
+- baseline observability dan logging
