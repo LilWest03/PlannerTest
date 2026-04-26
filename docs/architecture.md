@@ -12,11 +12,11 @@
 
 ### Frontend
 
-Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Homepage kini login dengan akun demo seeded terlebih dahulu agar alur auth ke workspace bisa didemokan meski persistence penuh belum aktif.
+Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Homepage login dengan akun demo seeded agar alur auth ke workspace bisa didemokan secara konsisten setelah migration database dijalankan.
 
 ### Backend API
 
-FastAPI dipakai untuk endpoint utama, orkestrasi request, dan fondasi integrasi antar modul. Baseline saat ini sudah memiliki endpoint health, system summary, auth, dan workspace overview.
+FastAPI dipakai untuk endpoint utama, orkestrasi request, dan fondasi integrasi antar modul. Baseline saat ini sudah memiliki endpoint health, system summary, auth, dan workspace overview yang memakai session database.
 
 ### Worker
 
@@ -24,27 +24,27 @@ Worker Python dipakai untuk heartbeat dasar, scheduler, dan proses background ya
 
 ### Database
 
-PostgreSQL menjadi penyimpanan utama untuk data pengguna, workspace, dan task. Fondasi SQLAlchemy model serta Alembic migration awal sudah ditambahkan agar batch berikutnya bisa langsung menghubungkan service ke persistence nyata.
+PostgreSQL menjadi penyimpanan utama untuk data pengguna, workspace, dan task. SQLAlchemy model, repository layer, dan Alembic migration awal sekarang sudah dipakai oleh auth dan workspace service dasar.
 
 ### Cache / Queue
 
 Redis dipakai sebagai fondasi queue ringan dan state sementara untuk kebutuhan background process.
 
-## Scope Batch 5
+## Scope Batch 6
 
-Batch ini menyiapkan persistence foundation tanpa memaksa refactor besar di service yang sudah ada:
+Batch ini memindahkan vertical slice awal dari seeded memory ke persistence PostgreSQL:
 
-- config database dan session SQLAlchemy
-- model `users`, `workspaces`, dan `tasks`
-- scaffold Alembic di folder backend
-- migration awal untuk schema inti
-- compose backend menerima environment database
-- dokumentasi setup migration ikut diperbarui
+- repository layer untuk `users`, `workspaces`, dan `tasks`
+- auth service register/login/current user memakai database
+- workspace service list/create/overview memakai database
+- demo user, workspace, dan task di-seed otomatis saat flow auth pertama berjalan
+- route auth dan workspace menerima dependency session database
+- dokumentasi local setup ikut diperbarui
 
 ## Langkah Berikutnya
 
-- ubah auth service dari seeded memory ke repository PostgreSQL
-- ubah workspace service agar membaca dan menulis ke database
-- tambah task CRUD yang memanfaatkan relasi owner dan workspace
-- integrasi dokumen dan memory
-- observability dasar untuk run history
+- task CRUD penuh dengan repository dan schema sendiri
+- persistence untuk dokumen dan metadata upload
+- activity log dasar
+- migrasi token ringan ke JWT standar bila dibutuhkan
+- integrasi agent dan document module ke repository layer
