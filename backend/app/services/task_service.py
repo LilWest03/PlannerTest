@@ -96,6 +96,7 @@ def update_task_for_user(
         status=payload.status,
         priority=payload.priority,
         due_at=payload.due_at,
+        due_at_provided="due_at" in payload.model_fields_set,
     )
     return _to_task_item(updated_task)
 
