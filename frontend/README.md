@@ -1,12 +1,26 @@
 # Frontend
 
-Folder ini disiapkan untuk dashboard mahasiswa.
+Scaffold frontend menggunakan Next.js App Router.
 
-Rencana isi:
+## Isi batch 2
 
-- autentikasi dan halaman masuk
-- dashboard workspace
-- task, deadline, dan status agent
-- tampilan dokumen dan hasil kerja agent
+- `package.json` untuk dependency dan script frontend
+- `app/layout.tsx` dan `app/page.tsx` untuk dashboard awal
+- `app/globals.css` untuk visual direction awal
+- `next.config.ts` dan `tsconfig.json` untuk konfigurasi project
 
-Batch berikutnya dapat mengisi folder ini dengan scaffold framework frontend yang dipilih.
+## Cara jalan lokal
+
+```bash
+npm install
+npm run dev
+```
+
+## Arah pengembangan
+
+Batch berikutnya bisa menambahkan:
+
+- login flow
+- task board
+- dokumen dan ringkasan agent
+- halaman workspace detail
