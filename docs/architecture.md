@@ -1,51 +1,35 @@
-# Architecture Overview
+# Arsitektur Awal
 
-Dokumen ini merangkum arsitektur awal AI Agent Workspace 24/7 untuk Mahasiswa.
+## Prinsip
 
-## Konteks produk
+- modular
+- student-centered
+- observable
+- human-in-the-loop untuk aksi penting
+- scalable secara bertahap
 
-Workspace ini dirancang sebagai asisten digital mahasiswa yang dapat membantu mengelola pekerjaan akademik, jadwal, catatan, dan proses belajar secara berkelanjutan.
-
-## Komponen utama
-
-```text
-[Frontend]
-    |
-    v
-[Backend API] ---> [PostgreSQL]
-    |
-    v
-[Queue / Redis]
-    |
-    v
-[Worker / Agent Runtime]
-```
-
-## Peran komponen
+## Komponen
 
 ### Frontend
 
-Antarmuka utama untuk mahasiswa. Area ini akan menampung dashboard, chat/command center, kalender, daftar tugas, dan insight produktivitas.
+Antarmuka mahasiswa untuk mengelola workspace, task, dokumen, deadline, dan interaksi dengan agent.
 
 ### Backend API
 
-Lapisan layanan utama yang menangani autentikasi, data domain, integrasi eksternal, dan orchestration request dari frontend.
+Layanan utama untuk autentikasi, manajemen workspace, orkestrasi task, dan integrasi antarmodul.
 
-### Worker / Agent Runtime
+### Worker
 
-Lapisan eksekusi asynchronous untuk pekerjaan AI agent, sinkronisasi berkala, reminder, dan job panjang.
+Komponen pemrosesan asinkron untuk scheduler, indexing dokumen, dan task jangka panjang.
 
-### PostgreSQL
+### Database
 
-Penyimpanan data relasional utama untuk user, workspace, tugas, jadwal, catatan, dan konfigurasi agent.
+Penyimpanan data operasional seperti pengguna, workspace, task, riwayat eksekusi, dan metadata dokumen.
 
-### Redis
+### Cache / Queue
 
-Cache dan queue ringan untuk pengembangan lokal. Dapat diganti atau diperkuat sesuai kebutuhan produksi.
+Lapisan pendukung untuk antrian task ringan, koordinasi background jobs, dan state sementara.
 
-## Prinsip desain awal
+## Catatan Batch 1
 
-- Modular sejak awal agar frontend, backend, dan worker dapat berkembang independen.
-- Environment lokal harus mudah dijalankan ulang.
-- Secret hanya disimpan di `.env`, bukan di repository.
-- Keputusan teknis besar harus dicatat di `docs/`.
+Dokumen ini masih bersifat fondasi. Diagram, flow task, desain database, dan kontrak API akan dirinci pada batch berikutnya.
