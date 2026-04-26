@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     demo_user_email: str = "demo@mahasiswa.local"
     demo_user_password: str = "demo12345"
     demo_user_name: str = "Demo Mahasiswa"
+    storage_mode: str = "local"
+    storage_path: str = "storage/documents"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
