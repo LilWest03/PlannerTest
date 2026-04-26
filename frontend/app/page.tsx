@@ -1,9 +1,20 @@
+type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
 type WorkspaceOverview = {
   workspace: {
     id: string;
     name: string;
     description: string;
     focus_mode: string;
+    owner_id: string;
     updated_at: string;
   };
   stats: {
@@ -29,10 +40,11 @@ type WorkspaceOverview = {
 
 const fallbackOverview: WorkspaceOverview = {
   workspace: {
-    id: "ws-skripsi-ai",
-    name: "Workspace Skripsi AI",
+    id: "ws-user-demo",
+    name: "Workspace Demo",
     description: "Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan skripsi.",
     focus_mode: "deadline-aware",
+    owner_id: "user-demo",
     updated_at: new Date().toISOString(),
   },
   stats: {
@@ -89,6 +101,8 @@ const fallbackOverview: WorkspaceOverview = {
 const apiBaseUrl =
   process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const browserApiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const demoEmail = process.env.DEMO_USER_EMAIL ?? "demo@mahasiswa.local";
+const demoPassword = process.env.DEMO_USER_PASSWORD ?? "demo12345";
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -98,24 +112,62 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-async function getWorkspaceOverview(): Promise<WorkspaceOverview> {
+async function getDemoToken(): Promise<AuthResponse | null> {
   try {
+    const response = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: demoEmail,
+        password: demoPassword,
+      }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as AuthResponse;
+  } catch {
+    return null;
+  }
+}
+
+async function getWorkspaceOverview(): Promise<{ overview: WorkspaceOverview; demoUserName: string }> {
+  try {
+    const auth = await getDemoToken();
+    if (!auth) {
+      throw new Error("Demo auth unavailable");
+    }
+
     const response = await fetch(`${apiBaseUrl}/api/v1/workspaces/overview`, {
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`,
+      },
     });
 
     if (!response.ok) {
       throw new Error("Failed to fetch workspace overview");
     }
 
-    return (await response.json()) as WorkspaceOverview;
+    return {
+      overview: (await response.json()) as WorkspaceOverview,
+      demoUserName: auth.user.name,
+    };
   } catch {
-    return fallbackOverview;
+    return {
+      overview: fallbackOverview,
+      demoUserName: "Demo Mahasiswa",
+    };
   }
 }
 
 export default async function Home() {
-  const overview = await getWorkspaceOverview();
+  const { overview, demoUserName } = await getWorkspaceOverview();
   const stats = [
     {
       label: "Task aktif",
@@ -144,16 +196,16 @@ export default async function Home() {
             <h1 className="headline">{overview.workspace.name}</h1>
             <p className="subcopy">{overview.workspace.description}</p>
             <p className="subcopy">
-              Mode fokus <strong>{overview.workspace.focus_mode}</strong> dengan sinkron terakhir
-              pada {" "}
+              Login demo aktif sebagai <strong>{demoUserName}</strong> dengan mode fokus{" "}
+              <strong>{overview.workspace.focus_mode}</strong>. Sinkron terakhir pada{" "}
               {formatDateTime(overview.workspace.updated_at)}.
             </p>
             <div className="actions">
               <a className="primary" href={`${browserApiBaseUrl}/docs`}>
                 Buka API Docs
               </a>
-              <a className="secondary" href={`${browserApiBaseUrl}/api/v1/workspaces/overview`}>
-                Lihat Workspace API
+              <a className="secondary" href={`${browserApiBaseUrl}/api/v1/auth/me`}>
+                Cek Auth API
               </a>
             </div>
             <div className="support-grid">
@@ -180,8 +232,8 @@ export default async function Home() {
                 <div>
                   <h2>Task Prioritas</h2>
                   <p>
-                    Agenda ini sekarang datang dari endpoint backend, jadi homepage sudah mulai
-                    membaca data workspace sungguhan alih-alih konten statis murni.
+                    Homepage sekarang login dengan akun demo seeded lebih dulu, lalu mengambil
+                    overview workspace yang sudah diproteksi bearer token.
                   </p>
                 </div>
 
@@ -200,7 +252,10 @@ export default async function Home() {
 
               <div className="timeline-panel">
                 <h3>Highlight Agent</h3>
-                <p>Batch berikutnya bisa meneruskan data ini ke autentikasi, database, dan scheduler.</p>
+                <p>
+                  Ownership workspace sekarang sudah diikat ke user aktif, jadi batch berikutnya
+                  tinggal meneruskan model ini ke database dan task CRUD.
+                </p>
                 <div className="timeline-list">
                   {overview.highlights.map((item) => (
                     <div className="timeline-item" key={`${item.category}-${item.title}`}>
