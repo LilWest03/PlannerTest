@@ -1,5 +1,10 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
+from uuid import uuid4
 
+from sqlalchemy.orm import Session
+
+from app.repositories import create_workspace as create_workspace_record
+from app.repositories import get_workspace_by_owner, list_tasks_for_workspace, list_workspaces_by_owner
 from app.schemas.auth import AuthUser
 from app.schemas.workspace import (
     WorkspaceCreateRequest,
@@ -9,87 +14,95 @@ from app.schemas.workspace import (
     WorkspaceStats,
     WorkspaceTask,
 )
+from app.services.demo_seed_service import ensure_demo_state
 
 
-def _workspace_item(user: AuthUser) -> WorkspaceItem:
-    first_name = user.name.split()[0]
+def _to_workspace_item(workspace) -> WorkspaceItem:
     return WorkspaceItem(
-        id=f"ws-{user.id}",
-        name=f"Workspace {first_name}",
-        description="Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan akademik.",
-        focus_mode="deadline-aware",
-        owner_id=user.id,
-        updated_at=datetime.now(UTC),
+        id=workspace.id,
+        name=workspace.name,
+        description=workspace.description,
+        focus_mode=workspace.focus_mode,
+        owner_id=workspace.owner_id,
+        updated_at=workspace.updated_at,
     )
 
 
-def list_workspaces(user: AuthUser) -> list[WorkspaceItem]:
-    return [_workspace_item(user)]
+def list_workspaces(db: Session, user: AuthUser) -> list[WorkspaceItem]:
+    ensure_demo_state(db)
+    workspaces = list_workspaces_by_owner(db, user.id)
+    return [_to_workspace_item(workspace) for workspace in workspaces]
 
 
-def get_workspace_overview(user: AuthUser) -> WorkspaceOverview:
-    now = datetime.now(UTC)
+def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
+    ensure_demo_state(db)
+    workspace = get_workspace_by_owner(db, user.id)
+    if workspace is None:
+        workspace = create_workspace_record(
+            db,
+            workspace_id=f"ws-{uuid4().hex[:12]}",
+            owner_id=user.id,
+            name=f"Workspace {user.name.split()[0]}",
+            description="Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan akademik.",
+            focus_mode="deadline-aware",
+        )
+
+    tasks = list_tasks_for_workspace(db, workspace.id, limit=6)
+    due_today = 0
+    now = datetime.now(UTC).date()
+    upcoming_tasks: list[WorkspaceTask] = []
+    for task in tasks:
+        if task.due_at and task.due_at.date() == now:
+            due_today += 1
+        upcoming_tasks.append(
+            WorkspaceTask(
+                title=task.title,
+                course="Workspace Akademik",
+                due_at=task.due_at or workspace.updated_at,
+                priority=task.priority,
+                agent_name="Task Planner Agent",
+                status=task.status,
+            )
+        )
+
     first_name = user.name.split()[0]
     return WorkspaceOverview(
-        workspace=_workspace_item(user),
-        stats=WorkspaceStats(
-            active_tasks=6,
-            due_today=2,
-            active_agents=3,
-            indexed_documents=18,
-        ),
-        upcoming_tasks=[
-            WorkspaceTask(
-                title=f"Finalkan ringkasan Bab 2 untuk {first_name}",
-                course="Metodologi Penelitian",
-                due_at=now + timedelta(hours=6),
-                priority="high",
-                agent_name="Document Agent",
-                status="in_review",
-            ),
-            WorkspaceTask(
-                title="Susun timeline eksperimen",
-                course="Skripsi",
-                due_at=now + timedelta(days=1, hours=2),
-                priority="medium",
-                agent_name="Task Planner Agent",
-                status="queued",
-            ),
-            WorkspaceTask(
-                title="Rapikan catatan jurnal utama",
-                course="Natural Language Processing",
-                due_at=now + timedelta(days=2),
-                priority="medium",
-                agent_name="Study Agent",
-                status="ready",
-            ),
-        ],
+        workspace=_to_workspace_item(workspace),
+        stats={
+            "active_tasks": len(tasks),
+            "due_today": due_today,
+            "active_agents": 3,
+            "indexed_documents": 18,
+        },
+        upcoming_tasks=upcoming_tasks,
         highlights=[
             WorkspaceHighlight(
-                title="Morning sync selesai",
-                detail=f"Deadline {first_name.lower()} hari ini sudah diprioritaskan ulang berdasarkan urgensi tugas.",
-                category="scheduler",
+                title="Workspace tersinkron",
+                detail=f"Data workspace {first_name.lower()} sekarang dibaca dari PostgreSQL baseline.",
+                category="database",
             ),
             WorkspaceHighlight(
-                title="Dokumen terbaru terindeks",
-                detail="Tiga referensi skripsi baru siap dipakai untuk tanya jawab berbasis dokumen.",
-                category="documents",
+                title="Task prioritas tersedia",
+                detail="Task demo awal tersimpan sebagai data dasar untuk pengembangan CRUD berikutnya.",
+                category="tasks",
             ),
             WorkspaceHighlight(
                 title="Review malam dijadwalkan",
-                detail="Agent akan menyiapkan ringkasan progres dan risiko pada pukul 20:00.",
+                detail="Agent tetap bisa menyusun ringkasan progres dan risiko pada pukul 20:00.",
                 category="reporting",
             ),
         ],
     )
 
 
-def create_workspace(payload: WorkspaceCreateRequest, user: AuthUser) -> WorkspaceItem:
-    return WorkspaceItem(
-        id=f"ws-{user.id}-draft",
+def create_workspace(db: Session, payload: WorkspaceCreateRequest, user: AuthUser) -> WorkspaceItem:
+    ensure_demo_state(db)
+    workspace = create_workspace_record(
+        db,
+        workspace_id=f"ws-{uuid4().hex[:12]}",
+        owner_id=user.id,
         name=payload.name,
         description=payload.description,
         focus_mode=payload.focus_mode,
-        owner_id=user.id,
-        updated_at=datetime.now(UTC),
     )
+    return _to_workspace_item(workspace)
