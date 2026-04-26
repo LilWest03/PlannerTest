@@ -1,61 +1,78 @@
+version: "3.9"
+
 services:
-  frontend:
-    image: node:20-alpine
-    working_dir: /app
-    command: sh -c "echo 'Frontend scaffold ready on port 3000' && tail -f /dev/null"
-    ports:
-      - "${FRONTEND_PORT:-3000}:3000"
-    volumes:
-      - ./frontend:/app
-    env_file:
-      - .env
-    depends_on:
-      - backend
-
-  backend:
-    image: python:3.12-slim
-    working_dir: /app
-    command: sh -c "echo 'Backend scaffold ready on port 8000' && tail -f /dev/null"
-    ports:
-      - "${BACKEND_PORT:-8000}:8000"
-    volumes:
-      - ./backend:/app
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-      - redis
-
-  worker:
-    image: python:3.12-slim
-    working_dir: /app
-    command: sh -c "echo 'Worker scaffold ready' && tail -f /dev/null"
-    volumes:
-      - ./worker:/app
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-      - redis
-
   postgres:
     image: postgres:16-alpine
+    container_name: student-workspace-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-planner_workspace}
-      POSTGRES_USER: ${POSTGRES_USER:-planner}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-planner_password}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
+    container_name: student-workspace-redis
+    restart: unless-stopped
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_PORT}:6379"
+
+  backend:
+    image: alpine:3.20
+    container_name: student-workspace-backend
+    restart: unless-stopped
+    working_dir: /app
+    command: ["sh", "-c", "echo 'Backend scaffold placeholder is ready.' && tail -f /dev/null"]
+    environment:
+      APP_ENV: ${APP_ENV}
+      LOG_LEVEL: ${LOG_LEVEL}
+      BACKEND_HOST: ${BACKEND_HOST}
+      BACKEND_PORT: ${BACKEND_PORT}
+      API_PREFIX: ${API_PREFIX}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "${BACKEND_PORT}:8000"
     volumes:
-      - redis_data:/data
+      - ./backend:/app
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    image: alpine:3.20
+    container_name: student-workspace-frontend
+    restart: unless-stopped
+    working_dir: /app
+    command: ["sh", "-c", "echo 'Frontend scaffold placeholder is ready.' && tail -f /dev/null"]
+    environment:
+      APP_ENV: ${APP_ENV}
+      FRONTEND_PORT: ${FRONTEND_PORT}
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+
+  worker:
+    image: alpine:3.20
+    container_name: student-workspace-worker
+    restart: unless-stopped
+    working_dir: /app
+    command: ["sh", "-c", "echo 'Worker scaffold placeholder is ready.' && tail -f /dev/null"]
+    environment:
+      APP_ENV: ${APP_ENV}
+      LOG_LEVEL: ${LOG_LEVEL}
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY}
+    volumes:
+      - ./worker:/app
+    depends_on:
+      - backend
+      - redis
 
 volumes:
   postgres_data:
-  redis_data:
