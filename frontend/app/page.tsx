@@ -204,8 +204,8 @@ export default async function Home() {
               <a className="primary" href={`${browserApiBaseUrl}/docs`}>
                 Buka API Docs
               </a>
-              <a className="secondary" href={`${browserApiBaseUrl}/api/v1/auth/me`}>
-                Cek Auth API
+              <a className="secondary" href={`${browserApiBaseUrl}/api/v1/system/summary`}>
+                Lihat System Summary
               </a>
             </div>
             <div className="support-grid">
