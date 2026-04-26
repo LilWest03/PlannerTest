@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     postgres_host: str = "localhost"
     postgres_port: int = 5432
     database_url: str = "postgresql+psycopg://student_workspace:student_workspace@localhost:5432/student_workspace"
+    demo_user_email: str = "demo@mahasiswa.local"
+    demo_user_password: str = "demo12345"
+    demo_user_name: str = "Demo Mahasiswa"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
