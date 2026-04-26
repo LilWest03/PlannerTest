@@ -1,13 +1,12 @@
 # Frontend
 
-Folder ini disiapkan untuk antarmuka AI Agent Workspace 24/7 untuk Mahasiswa.
+Folder ini disiapkan untuk dashboard mahasiswa.
 
-## Tanggung jawab
+Rencana isi:
 
-- Menampilkan dashboard tugas, jadwal, catatan, dan aktivitas agent.
-- Menyediakan UI chat atau command center untuk berinteraksi dengan AI agent.
-- Menghubungkan user experience dengan API backend.
+- autentikasi dan halaman masuk
+- dashboard workspace
+- task, deadline, dan status agent
+- tampilan dokumen dan hasil kerja agent
 
-## Status
-
-Belum ada framework yang dipasang pada batch scaffold awal ini. Pilihan stack akan ditentukan pada batch berikutnya.
+Batch berikutnya dapat mengisi folder ini dengan scaffold framework frontend yang dipilih.
