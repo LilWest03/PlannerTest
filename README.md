@@ -11,74 +11,67 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem:
 - aman untuk operasi penting dengan human-in-the-loop
 - mudah diobservasi melalui log, audit trail, dan status task
 
-## Scope Batch 1
+## Progress Saat Ini
 
-Batch pertama berfokus pada bootstrap struktur proyek agar review awal mudah dilakukan:
+### Batch 1
 
-- penataan folder utama
+- struktur folder utama
 - dokumentasi dasar proyek
 - contoh konfigurasi environment
-- docker compose untuk environment lokal
-- placeholder per modul agar arah pengembangan jelas
+- docker compose awal
 
-Framework aplikasi inti belum dipasang pada batch ini. Tujuannya agar perubahan awal tetap kecil, jelas, dan mudah direview.
+### Batch 2
+
+- scaffold `backend` dengan FastAPI
+- scaffold `frontend` dengan Next.js App Router
+- scaffold `worker` dengan Python heartbeat loop
+- penyelarasan dokumentasi dan local development flow
 
 ## Struktur Folder
 
 ```text
 .
 ├── backend/
+│   ├── app/
+│   └── requirements.txt
 ├── docs/
 ├── frontend/
+│   ├── app/
+│   └── package.json
 ├── infra/
 ├── scripts/
 ├── worker/
+│   ├── app/
+│   └── requirements.txt
 ├── .env.example
+├── .gitignore
 └── docker-compose.yml
 ```
 
-## Gambaran Arsitektur Awal
+## Stack Batch 2
 
-- `frontend/`: dashboard mahasiswa untuk workspace, task, dokumen, dan status agent
-- `backend/`: API utama, auth, workspace orchestration, dan business logic
-- `worker/`: background jobs untuk scheduler, indexing dokumen, dan task agent asinkron
-- `docs/`: catatan arsitektur, scope MVP, dan dokumentasi teknis
-- `infra/`: kebutuhan deployment dan infrastruktur pendukung
-- `scripts/`: helper script untuk pengembangan lokal
+- `frontend`: Next.js 15
+- `backend`: FastAPI
+- `worker`: Python + requests
+- `database`: PostgreSQL
+- `cache/queue`: Redis
 
-## Rencana Evolusi Bertahap
-
-### MVP
-
-- autentikasi pengguna
-- dashboard workspace dasar
-- manajemen task dan deadline
-- unggah dan pemrosesan dokumen sederhana
-- scheduler task agent dasar
-
-### Versi Menengah
-
-- retrieval context dan memory per workspace
-- vector search untuk dokumen kuliah
-- notifikasi deadline dan reminder
-- observability yang lebih lengkap
-
-### Production-Oriented
-
-- multi-agent orchestration yang lebih matang
-- role dan permission yang lebih rinci
-- isolasi workload yang lebih baik
-- monitoring, retry policy, dan audit trail penuh
+Pilihan ini cukup realistis untuk proyek mahasiswa karena ringan, umum dipakai, dan mudah dikembangkan bertahap.
 
 ## Menjalankan Environment Lokal
 
 1. Salin `.env.example` menjadi `.env`
-2. Tinjau nilai environment sesuai kebutuhan lokal
-3. Jalankan docker compose:
+2. Jalankan environment:
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
+
+3. Akses service:
+
+- frontend: `http://localhost:3000`
+- backend API: `http://localhost:8000`
+- backend docs: `http://localhost:8000/docs`
 
 4. Hentikan service:
 
@@ -86,12 +79,24 @@ docker compose up -d
 docker compose down
 ```
 
-Catatan: pada batch ini service masih berupa fondasi environment dan placeholder command. Implementasi aplikasi nyata akan ditambahkan pada batch berikutnya.
+## Gambaran Komponen
+
+- `frontend/`: dashboard awal untuk workspace mahasiswa
+- `backend/`: endpoint kesehatan sistem dan ringkasan service
+- `worker/`: background loop awal untuk heartbeat backend
+- `docs/`: catatan arsitektur awal
+- `scripts/`: helper script pengembangan lokal
+
+## Endpoint Awal
+
+- `GET /`
+- `GET /api/v1/health`
+- `GET /api/v1/system/summary`
 
 ## Prioritas Batch Berikutnya
 
-- scaffold aplikasi `frontend`
-- scaffold API `backend`
-- scaffold job runner `worker`
-- definisi MVP yang lebih rinci pada `docs/`
-- baseline observability dan logging
+- desain database dan migration awal
+- kontrak API MVP
+- task scheduler yang lebih nyata
+- unggah dokumen dan indexing sederhana
+- autentikasi dan workspace management
