@@ -34,6 +34,14 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - dokumentasi scope MVP yang lebih tajam
 - compose frontend dibekali `INTERNAL_API_URL` untuk server-side fetch
 
+### Batch 4
+
+- baseline auth dengan bearer token ringan
+- seeded demo account untuk login lokal
+- endpoint `auth/register`, `auth/login`, dan `auth/me`
+- route `workspace` diproteksi dan diikat ke user aktif
+- homepage frontend login demo terlebih dahulu sebelum memanggil workspace overview
+
 ## Struktur Folder
 
 ```text
@@ -79,9 +87,15 @@ docker compose up --build
 - frontend: `http://localhost:3000`
 - backend API: `http://localhost:8000`
 - backend docs: `http://localhost:8000/docs`
+- auth login: `http://localhost:8000/api/v1/auth/login`
 - workspace overview: `http://localhost:8000/api/v1/workspaces/overview`
 
-4. Hentikan service:
+4. Gunakan akun demo lokal:
+
+- email: `demo@mahasiswa.local`
+- password: `demo12345`
+
+5. Hentikan service:
 
 ```bash
 docker compose down
@@ -90,7 +104,7 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint health, system summary, dan workspace baseline
+- `backend/`: endpoint health, auth, system summary, dan workspace baseline
 - `worker/`: background loop awal untuk heartbeat backend
 - `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
@@ -100,14 +114,17 @@ docker compose down
 - `GET /`
 - `GET /api/v1/health`
 - `GET /api/v1/system/summary`
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
 - `GET /api/v1/workspaces`
 - `GET /api/v1/workspaces/overview`
 - `POST /api/v1/workspaces`
 
 ## Prioritas Batch Berikutnya
 
-- autentikasi dan ownership workspace
+- persistence auth dan workspace ke PostgreSQL
 - desain database dan migration awal
-- task scheduler yang lebih nyata
+- task CRUD dan run status
 - unggah dokumen dan indexing sederhana
 - agent run history dan activity log
