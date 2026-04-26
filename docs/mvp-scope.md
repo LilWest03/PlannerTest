@@ -2,7 +2,7 @@
 
 ## Tujuan MVP
 
-MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat workspace akademik, memantau tugas prioritas, dan menyiapkan fondasi agent-driven workflow tanpa langsung melompat ke orkestrasi kompleks.
+MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat workspace akademik, memantau tugas prioritas, mengelola dokumen dasar, dan menyiapkan fondasi agent-driven workflow tanpa langsung melompat ke orkestrasi kompleks.
 
 ## In Scope
 
@@ -25,9 +25,10 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - auth demo dengan token bearer ringan
 - workspace overview API yang sudah terkait user aktif
 - homepage yang login demo lalu membaca overview backend
-- model database dan migration awal untuk `users`, `workspaces`, dan `tasks`
+- model database dan migration awal untuk `users`, `workspaces`, `tasks`, dan `documents`
 - auth dan workspace service yang sudah memakai PostgreSQL baseline
 - task CRUD dasar berbasis database
+- document upload dan metadata persistence berbasis local storage + PostgreSQL
 
 ## Ditunda Setelah MVP Dasar Stabil
 
@@ -47,8 +48,8 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 
 ## Target Increment Berikutnya
 
-1. document upload + metadata
+1. activity log dasar
 2. scheduler reminder harian
-3. activity log dasar
-4. agent run history
-5. document retrieval context
+3. agent run history
+4. document retrieval context
+5. JWT standar dan hardening auth
