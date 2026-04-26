@@ -1,5 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
+from app.schemas.auth import AuthUser
 from app.schemas.workspace import (
     WorkspaceCreateRequest,
     WorkspaceHighlight,
@@ -10,24 +11,27 @@ from app.schemas.workspace import (
 )
 
 
-def _workspace_item() -> WorkspaceItem:
+def _workspace_item(user: AuthUser) -> WorkspaceItem:
+    first_name = user.name.split()[0]
     return WorkspaceItem(
-        id="ws-skripsi-ai",
-        name="Workspace Skripsi AI",
-        description="Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan skripsi.",
+        id=f"ws-{user.id}",
+        name=f"Workspace {first_name}",
+        description="Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan akademik.",
         focus_mode="deadline-aware",
+        owner_id=user.id,
         updated_at=datetime.now(UTC),
     )
 
 
-def list_workspaces() -> list[WorkspaceItem]:
-    return [_workspace_item()]
+def list_workspaces(user: AuthUser) -> list[WorkspaceItem]:
+    return [_workspace_item(user)]
 
 
-def get_workspace_overview() -> WorkspaceOverview:
+def get_workspace_overview(user: AuthUser) -> WorkspaceOverview:
     now = datetime.now(UTC)
+    first_name = user.name.split()[0]
     return WorkspaceOverview(
-        workspace=_workspace_item(),
+        workspace=_workspace_item(user),
         stats=WorkspaceStats(
             active_tasks=6,
             due_today=2,
@@ -36,7 +40,7 @@ def get_workspace_overview() -> WorkspaceOverview:
         ),
         upcoming_tasks=[
             WorkspaceTask(
-                title="Finalkan ringkasan Bab 2",
+                title=f"Finalkan ringkasan Bab 2 untuk {first_name}",
                 course="Metodologi Penelitian",
                 due_at=now + timedelta(hours=6),
                 priority="high",
@@ -63,7 +67,7 @@ def get_workspace_overview() -> WorkspaceOverview:
         highlights=[
             WorkspaceHighlight(
                 title="Morning sync selesai",
-                detail="Deadline hari ini sudah diprioritaskan ulang berdasarkan urgensi tugas.",
+                detail=f"Deadline {first_name.lower()} hari ini sudah diprioritaskan ulang berdasarkan urgensi tugas.",
                 category="scheduler",
             ),
             WorkspaceHighlight(
@@ -80,11 +84,12 @@ def get_workspace_overview() -> WorkspaceOverview:
     )
 
 
-def create_workspace(payload: WorkspaceCreateRequest) -> WorkspaceItem:
+def create_workspace(payload: WorkspaceCreateRequest, user: AuthUser) -> WorkspaceItem:
     return WorkspaceItem(
-        id="ws-draft-new",
+        id=f"ws-{user.id}-draft",
         name=payload.name,
         description=payload.description,
         focus_mode=payload.focus_mode,
+        owner_id=user.id,
         updated_at=datetime.now(UTC),
     )
