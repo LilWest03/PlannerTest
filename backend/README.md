@@ -1,13 +1,12 @@
 # Backend
 
-Folder ini disiapkan untuk API dan business logic AI Agent Workspace 24/7 untuk Mahasiswa.
+Folder ini disiapkan untuk API utama dan orchestration layer.
 
-## Tanggung jawab
+Rencana isi:
 
-- Menyediakan API untuk frontend dan integrasi eksternal.
-- Mengelola autentikasi, profil mahasiswa, tugas, jadwal, dan data workspace.
-- Mengorkestrasi request agent yang perlu diproses sinkron.
+- auth dan authorization
+- workspace dan task API
+- document processing entrypoint
+- audit log dan observability endpoint
 
-## Status
-
-Belum ada framework yang dipasang pada batch scaffold awal ini. Pilihan stack akan ditentukan pada batch berikutnya.
+Batch berikutnya dapat mengisi folder ini dengan scaffold backend yang dipilih.
