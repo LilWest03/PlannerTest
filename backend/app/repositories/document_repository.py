@@ -19,6 +19,14 @@ def get_document_for_owner(db: Session, document_id: str, owner_id: str) -> Docu
     return db.execute(statement).scalar_one_or_none()
 
 
+def get_document_by_filename(db: Session, workspace_id: str, original_filename: str) -> Document | None:
+    statement = select(Document).where(
+        Document.workspace_id == workspace_id,
+        Document.original_filename == original_filename,
+    )
+    return db.execute(statement).scalar_one_or_none()
+
+
 def count_documents_for_workspace(db: Session, workspace_id: str) -> int:
     statement = select(func.count(Document.id)).where(Document.workspace_id == workspace_id)
     return int(db.execute(statement).scalar_one() or 0)
