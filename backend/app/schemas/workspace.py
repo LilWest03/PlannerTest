@@ -30,6 +30,7 @@ class WorkspaceItem(BaseModel):
     name: str
     description: str
     focus_mode: str
+    owner_id: str
     updated_at: datetime
 
 
