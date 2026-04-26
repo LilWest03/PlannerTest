@@ -22,8 +22,9 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - baseline frontend Next.js
 - baseline backend FastAPI
 - baseline worker Python
-- workspace overview API dengan data seeded
-- homepage yang sudah membaca overview backend
+- auth demo dengan token bearer ringan
+- workspace overview API yang sudah terkait user aktif
+- homepage yang login demo lalu membaca overview backend
 
 ## Ditunda Setelah MVP Dasar Stabil
 
@@ -43,7 +44,7 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 
 ## Target Increment Berikutnya
 
-1. auth + ownership workspace
+1. persistence auth + workspace ke PostgreSQL
 2. model database dan migration awal
 3. task CRUD dan run status
 4. document upload + metadata
