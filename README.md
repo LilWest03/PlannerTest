@@ -50,6 +50,14 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - migration awal pembuatan tabel inti
 - compose backend dibekali environment database
 
+### Batch 6
+
+- auth service dipindahkan ke PostgreSQL baseline
+- workspace service dipindahkan ke PostgreSQL baseline
+- repository layer untuk `user`, `workspace`, dan `task`
+- seeded demo user, workspace, dan task dibuat melalui database
+- route auth dan workspace sekarang menggunakan session database
+
 ## Struktur Folder
 
 ```text
@@ -92,7 +100,13 @@ Pilihan ini cukup realistis untuk proyek mahasiswa karena ringan, umum dipakai, 
 docker compose up --build
 ```
 
-3. Akses service:
+3. Dari folder `backend/`, jalankan migration awal:
+
+```bash
+alembic upgrade head
+```
+
+4. Akses service:
 
 - frontend: `http://localhost:3000`
 - backend API: `http://localhost:8000`
@@ -100,16 +114,11 @@ docker compose up --build
 - auth login: `http://localhost:8000/api/v1/auth/login`
 - workspace overview: `http://localhost:8000/api/v1/workspaces/overview`
 
-4. Gunakan akun demo lokal:
+5. Gunakan akun demo lokal:
 
 - email: `demo@mahasiswa.local`
 - password: `demo12345`
-
-5. Jalankan migration awal dari folder `backend/`:
-
-```bash
-alembic upgrade head
-```
+- name: `Demo Mahasiswa`
 
 6. Hentikan service:
 
@@ -120,7 +129,7 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint health, auth, system summary, workspace baseline, dan fondasi persistence
+- `backend/`: endpoint health, auth, system summary, workspace baseline, repository layer, dan persistence PostgreSQL awal
 - `worker/`: background loop awal untuk heartbeat backend
 - `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
@@ -139,8 +148,8 @@ docker compose down
 
 ## Prioritas Batch Berikutnya
 
-- hubungkan auth dan workspace service ke PostgreSQL
 - task CRUD dan run status berbasis database
 - unggah dokumen dan metadata persistence
 - agent run history dan activity log
 - migrasi token ringan ke JWT standar bila dibutuhkan
+- repository dan service layer untuk agent dan document module
