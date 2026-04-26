@@ -3,8 +3,13 @@ from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
-from app.repositories import create_workspace as create_workspace_record
-from app.repositories import get_workspace_by_owner, list_tasks_for_workspace, list_workspaces_by_owner
+from app.repositories import (
+    count_documents_for_workspace,
+    create_workspace as create_workspace_record,
+    get_workspace_by_owner,
+    list_tasks_for_workspace,
+    list_workspaces_by_owner,
+)
 from app.schemas.auth import AuthUser
 from app.schemas.workspace import (
     WorkspaceCreateRequest,
@@ -48,6 +53,7 @@ def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
         )
 
     tasks = list_tasks_for_workspace(db, workspace.id, limit=6)
+    document_count = count_documents_for_workspace(db, workspace.id)
     due_today = 0
     now = datetime.now(UTC).date()
     upcoming_tasks: list[WorkspaceTask] = []
@@ -68,12 +74,12 @@ def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
     first_name = user.name.split()[0]
     return WorkspaceOverview(
         workspace=_to_workspace_item(workspace),
-        stats={
-            "active_tasks": len(tasks),
-            "due_today": due_today,
-            "active_agents": 3,
-            "indexed_documents": 18,
-        },
+        stats=WorkspaceStats(
+            active_tasks=len(tasks),
+            due_today=due_today,
+            active_agents=3,
+            indexed_documents=document_count,
+        ),
         upcoming_tasks=upcoming_tasks,
         highlights=[
             WorkspaceHighlight(
@@ -87,9 +93,9 @@ def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
                 category="tasks",
             ),
             WorkspaceHighlight(
-                title="Review malam dijadwalkan",
-                detail="Agent tetap bisa menyusun ringkasan progres dan risiko pada pukul 20:00.",
-                category="reporting",
+                title="Dokumen siap dipakai",
+                detail=f"{document_count} dokumen sudah tercatat dan siap dipakai untuk indexing lanjutan.",
+                category="documents",
             ),
         ],
     )
