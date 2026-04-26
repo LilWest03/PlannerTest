@@ -1,12 +1,22 @@
 # Worker
 
-Folder ini disiapkan untuk background processing.
+Scaffold worker Python untuk background loop dan heartbeat dasar.
 
-Rencana isi:
+## Isi batch 2
 
-- scheduler task
-- retryable background jobs
-- indexing dokumen
-- eksekusi task agent asinkron
+- `app/main.py` untuk loop worker sederhana
+- `app/config.py` untuk konfigurasi worker
+- `requirements.txt` untuk dependency worker
 
-Batch berikutnya dapat mengisi folder ini dengan worker runtime yang dipilih.
+## Tugas awal worker
+
+- mengecek health backend secara periodik
+- menampilkan heartbeat ke log
+- menjadi titik awal scheduler dan async job berikutnya
+
+## Cara jalan lokal
+
+```bash
+pip install -r requirements.txt
+python -m app.main
+```
