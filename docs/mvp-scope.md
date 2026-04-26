@@ -25,6 +25,7 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - auth demo dengan token bearer ringan
 - workspace overview API yang sudah terkait user aktif
 - homepage yang login demo lalu membaca overview backend
+- model database dan migration awal untuk `users`, `workspaces`, dan `tasks`
 
 ## Ditunda Setelah MVP Dasar Stabil
 
@@ -45,7 +46,7 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 ## Target Increment Berikutnya
 
 1. persistence auth + workspace ke PostgreSQL
-2. model database dan migration awal
-3. task CRUD dan run status
-4. document upload + metadata
-5. scheduler reminder harian
+2. task CRUD dan run status
+3. document upload + metadata
+4. scheduler reminder harian
+5. activity log dasar
