@@ -10,6 +10,8 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `app/core/database.py` untuk engine dan session SQLAlchemy
 - `app/core/security.py` untuk token bearer ringan scaffold
 - `app/models/` untuk model `users`, `workspaces`, dan `tasks`
+- `app/repositories/` untuk akses data user, workspace, dan task
+- `app/services/demo_seed_service.py` untuk seed demo awal ke database
 - `migrations/` + `alembic.ini` untuk migration awal
 - `requirements.txt` untuk dependency backend
 
@@ -42,4 +44,4 @@ alembic upgrade head
 
 ## Catatan
 
-Layer database dan migration sudah siap, tetapi service auth dan workspace saat ini masih memakai seeded in-memory flow. Batch berikutnya perlu menghubungkan service tersebut ke PostgreSQL.
+Auth dan workspace service sekarang sudah membaca dan menulis baseline data lewat PostgreSQL. Demo user, workspace, dan task akan dibuat otomatis saat alur auth dipanggil pertama kali setelah database siap.
