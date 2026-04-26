@@ -42,12 +42,22 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - route `workspace` diproteksi dan diikat ke user aktif
 - homepage frontend login demo terlebih dahulu sebelum memanggil workspace overview
 
+### Batch 5
+
+- fondasi SQLAlchemy untuk `users`, `workspaces`, dan `tasks`
+- session database dan `DATABASE_URL` config
+- scaffold Alembic untuk migration
+- migration awal pembuatan tabel inti
+- compose backend dibekali environment database
+
 ## Struktur Folder
 
 ```text
 .
 ├── backend/
 │   ├── app/
+│   ├── migrations/
+│   ├── alembic.ini
 │   └── requirements.txt
 ├── docs/
 ├── frontend/
@@ -68,7 +78,7 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - `frontend`: Next.js 15
 - `backend`: FastAPI
 - `worker`: Python + requests
-- `database`: PostgreSQL
+- `database`: PostgreSQL + SQLAlchemy + Alembic
 - `cache/queue`: Redis
 
 Pilihan ini cukup realistis untuk proyek mahasiswa karena ringan, umum dipakai, dan mudah dikembangkan bertahap.
@@ -95,7 +105,13 @@ docker compose up --build
 - email: `demo@mahasiswa.local`
 - password: `demo12345`
 
-5. Hentikan service:
+5. Jalankan migration awal dari folder `backend/`:
+
+```bash
+alembic upgrade head
+```
+
+6. Hentikan service:
 
 ```bash
 docker compose down
@@ -104,7 +120,7 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint health, auth, system summary, dan workspace baseline
+- `backend/`: endpoint health, auth, system summary, workspace baseline, dan fondasi persistence
 - `worker/`: background loop awal untuk heartbeat backend
 - `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
@@ -123,8 +139,8 @@ docker compose down
 
 ## Prioritas Batch Berikutnya
 
-- persistence auth dan workspace ke PostgreSQL
-- desain database dan migration awal
-- task CRUD dan run status
-- unggah dokumen dan indexing sederhana
+- hubungkan auth dan workspace service ke PostgreSQL
+- task CRUD dan run status berbasis database
+- unggah dokumen dan metadata persistence
 - agent run history dan activity log
+- migrasi token ringan ke JWT standar bila dibutuhkan
