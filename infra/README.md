@@ -1,14 +1,10 @@
-# Infra
+# Infrastructure
 
-Folder ini disiapkan untuk konfigurasi infrastruktur dan deployment.
+Folder ini disiapkan untuk kebutuhan infrastruktur dan deployment, misalnya:
 
-## Rencana isi
+- template deployment
+- konfigurasi reverse proxy
+- environment provisioning
+- observability stack
 
-- Docker dan deployment manifests.
-- Infrastructure as Code.
-- Konfigurasi database, queue, observability, dan secret management.
-- Runbook operasional produksi.
-
-## Status
-
-Batch scaffold awal hanya menyiapkan folder dan dokumentasi placeholder.
+Pada batch awal, isi folder ini masih berupa placeholder agar struktur repo jelas sejak awal.
