@@ -1,6 +1,7 @@
 from app.repositories.document_repository import (
     count_documents_for_workspace,
     create_document,
+    get_document_by_filename,
     get_document_for_owner,
     list_documents_for_workspace,
 )
