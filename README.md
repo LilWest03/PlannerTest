@@ -1,10 +1,10 @@
 # AI Agent Workspace 24/7 untuk Mahasiswa
 
-Scaffold awal untuk proyek workspace berbasis AI agent yang membantu mahasiswa mengelola tugas, dokumen, jadwal, deadline, dan alur kerja belajar secara terstruktur.
+Scaffold bertahap untuk proyek workspace berbasis AI agent yang membantu mahasiswa mengelola tugas, dokumen, jadwal, deadline, dan alur kerja belajar secara lebih terstruktur.
 
 ## Tujuan Repositori
 
-Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem:
+Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang:
 
 - modular dan mudah dikembangkan
 - realistis untuk MVP tugas akhir atau skripsi
@@ -27,6 +27,13 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem:
 - scaffold `worker` dengan Python heartbeat loop
 - penyelarasan dokumentasi dan local development flow
 
+### Batch 3
+
+- baseline endpoint `workspace` di backend
+- homepage frontend membaca overview dari backend
+- dokumentasi scope MVP yang lebih tajam
+- compose frontend dibekali `INTERNAL_API_URL` untuk server-side fetch
+
 ## Struktur Folder
 
 ```text
@@ -48,7 +55,7 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem:
 └── docker-compose.yml
 ```
 
-## Stack Batch 2
+## Stack Saat Ini
 
 - `frontend`: Next.js 15
 - `backend`: FastAPI
@@ -72,6 +79,7 @@ docker compose up --build
 - frontend: `http://localhost:3000`
 - backend API: `http://localhost:8000`
 - backend docs: `http://localhost:8000/docs`
+- workspace overview: `http://localhost:8000/api/v1/workspaces/overview`
 
 4. Hentikan service:
 
@@ -82,9 +90,9 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint kesehatan sistem dan ringkasan service
+- `backend/`: endpoint health, system summary, dan workspace baseline
 - `worker/`: background loop awal untuk heartbeat backend
-- `docs/`: catatan arsitektur awal
+- `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
 
 ## Endpoint Awal
@@ -92,11 +100,14 @@ docker compose down
 - `GET /`
 - `GET /api/v1/health`
 - `GET /api/v1/system/summary`
+- `GET /api/v1/workspaces`
+- `GET /api/v1/workspaces/overview`
+- `POST /api/v1/workspaces`
 
 ## Prioritas Batch Berikutnya
 
+- autentikasi dan ownership workspace
 - desain database dan migration awal
-- kontrak API MVP
 - task scheduler yang lebih nyata
 - unggah dokumen dan indexing sederhana
-- autentikasi dan workspace management
+- agent run history dan activity log
