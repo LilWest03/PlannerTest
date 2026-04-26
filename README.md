@@ -58,6 +58,14 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - seeded demo user, workspace, dan task dibuat melalui database
 - route auth dan workspace sekarang menggunakan session database
 
+### Batch 7
+
+- task CRUD berbasis database
+- endpoint list/create task per workspace
+- endpoint detail/update/delete task per owner
+- schema task untuk create, update, detail, dan summary
+- router backend sudah mengekspose modul `tasks`
+
 ## Struktur Folder
 
 ```text
@@ -113,6 +121,7 @@ alembic upgrade head
 - backend docs: `http://localhost:8000/docs`
 - auth login: `http://localhost:8000/api/v1/auth/login`
 - workspace overview: `http://localhost:8000/api/v1/workspaces/overview`
+- task list demo: `http://localhost:8000/api/v1/workspaces/ws-user-demo/tasks`
 
 5. Gunakan akun demo lokal:
 
@@ -129,7 +138,7 @@ docker compose down
 ## Gambaran Komponen
 
 - `frontend/`: dashboard awal untuk workspace mahasiswa
-- `backend/`: endpoint health, auth, system summary, workspace baseline, repository layer, dan persistence PostgreSQL awal
+- `backend/`: endpoint health, auth, workspace, task CRUD, repository layer, dan persistence PostgreSQL awal
 - `worker/`: background loop awal untuk heartbeat backend
 - `docs/`: catatan arsitektur dan scope MVP
 - `scripts/`: helper script pengembangan lokal
@@ -145,11 +154,16 @@ docker compose down
 - `GET /api/v1/workspaces`
 - `GET /api/v1/workspaces/overview`
 - `POST /api/v1/workspaces`
+- `GET /api/v1/workspaces/{workspace_id}/tasks`
+- `POST /api/v1/workspaces/{workspace_id}/tasks`
+- `GET /api/v1/tasks/{task_id}`
+- `PUT /api/v1/tasks/{task_id}`
+- `DELETE /api/v1/tasks/{task_id}`
 
 ## Prioritas Batch Berikutnya
 
-- task CRUD dan run status berbasis database
-- unggah dokumen dan metadata persistence
-- agent run history dan activity log
+- document upload dan metadata persistence
+- activity log dasar
+- scheduler reminder harian
+- agent run history
 - migrasi token ringan ke JWT standar bila dibutuhkan
-- repository dan service layer untuk agent dan document module
