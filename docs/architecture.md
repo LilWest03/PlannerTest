@@ -12,7 +12,7 @@
 
 ### Frontend
 
-Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Homepage kini login dengan akun demo seeded terlebih dahulu agar alur auth ke workspace bisa didemokan meski database belum aktif.
+Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Homepage kini login dengan akun demo seeded terlebih dahulu agar alur auth ke workspace bisa didemokan meski persistence penuh belum aktif.
 
 ### Backend API
 
@@ -24,27 +24,27 @@ Worker Python dipakai untuk heartbeat dasar, scheduler, dan proses background ya
 
 ### Database
 
-PostgreSQL tetap menjadi penyimpanan utama untuk data pengguna, workspace, task, dan metadata dokumen. Integrasi database nyata belum diaktifkan; auth dan workspace masih memakai seeded in-memory service layer agar kontrak API bisa direview lebih awal.
+PostgreSQL menjadi penyimpanan utama untuk data pengguna, workspace, dan task. Fondasi SQLAlchemy model serta Alembic migration awal sudah ditambahkan agar batch berikutnya bisa langsung menghubungkan service ke persistence nyata.
 
 ### Cache / Queue
 
 Redis dipakai sebagai fondasi queue ringan dan state sementara untuk kebutuhan background process.
 
-## Scope Batch 4
+## Scope Batch 5
 
-Batch ini mendorong repo dari vertical slice publik ke slice yang sudah punya konteks user:
+Batch ini menyiapkan persistence foundation tanpa memaksa refactor besar di service yang sudah ada:
 
-- backend FastAPI memiliki route `auth`
-- utility token bearer ringan berbasis secret aplikasi
-- service auth seeded untuk register, login, dan current user
-- route `workspaces` sekarang membutuhkan user aktif
-- homepage Next.js melakukan demo login sebelum memanggil overview workspace
-- compose dan env example mendukung kredensial demo lokal
+- config database dan session SQLAlchemy
+- model `users`, `workspaces`, dan `tasks`
+- scaffold Alembic di folder backend
+- migration awal untuk schema inti
+- compose backend menerima environment database
+- dokumentasi setup migration ikut diperbarui
 
 ## Langkah Berikutnya
 
-- persistence auth dan workspace ke PostgreSQL
-- migrasi dari token ringan ke JWT yang lebih standar bila diperlukan
-- task CRUD dengan relasi ke workspace owner
+- ubah auth service dari seeded memory ke repository PostgreSQL
+- ubah workspace service agar membaca dan menulis ke database
+- tambah task CRUD yang memanfaatkan relasi owner dan workspace
 - integrasi dokumen dan memory
 - observability dasar untuk run history
