@@ -1,13 +1,12 @@
 # Worker
 
-Folder ini disiapkan untuk background processing dan runtime agent.
+Folder ini disiapkan untuk background processing.
 
-## Tanggung jawab
+Rencana isi:
 
-- Menjalankan job terjadwal, reminder, dan sinkronisasi data.
-- Memproses tugas AI agent yang membutuhkan eksekusi asynchronous.
-- Mengelola queue dan retry untuk pekerjaan background.
+- scheduler task
+- retryable background jobs
+- indexing dokumen
+- eksekusi task agent asinkron
 
-## Status
-
-Belum ada runtime worker yang dipasang pada batch scaffold awal ini. Implementasi queue dan scheduler akan ditentukan pada batch berikutnya.
+Batch berikutnya dapat mengisi folder ini dengan worker runtime yang dipilih.
