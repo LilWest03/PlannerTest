@@ -23,11 +23,17 @@ def system_summary() -> dict[str, object]:
     settings = get_settings()
     return {
         "project": settings.app_name,
-        "modules": ["frontend", "backend", "worker", "docs"],
+        "modules": ["frontend", "backend", "worker", "docs", "workspace-api"],
         "core_features": [
             "task and deadline tracking",
             "workspace overview",
             "agent orchestration baseline",
             "document processing roadmap",
+            "workspace summary endpoint",
+        ],
+        "next_focus": [
+            "auth and workspace ownership",
+            "database integration",
+            "task scheduler",
         ],
     }
