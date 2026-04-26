@@ -1,12 +1,23 @@
 # Backend
 
-Folder ini disiapkan untuk API utama dan orchestration layer.
+Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 
-Rencana isi:
+## Isi batch 2
 
-- auth dan authorization
-- workspace dan task API
-- document processing entrypoint
-- audit log dan observability endpoint
+- `app/main.py` untuk bootstrap FastAPI
+- `app/api/routes/health.py` untuk endpoint dasar
+- `app/core/config.py` untuk konfigurasi environment
+- `requirements.txt` untuk dependency backend
 
-Batch berikutnya dapat mengisi folder ini dengan scaffold backend yang dipilih.
+## Endpoint awal
+
+- `GET /`
+- `GET /api/v1/health`
+- `GET /api/v1/system/summary`
+
+## Cara jalan lokal
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
