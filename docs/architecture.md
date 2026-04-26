@@ -12,11 +12,11 @@
 
 ### Frontend
 
-Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Pada baseline ini homepage sudah membaca data overview dari backend untuk menghindari dashboard yang sepenuhnya statis.
+Next.js dipakai untuk dashboard mahasiswa, workspace overview, dan titik masuk interaksi dengan agent. Homepage kini login dengan akun demo seeded terlebih dahulu agar alur auth ke workspace bisa didemokan meski database belum aktif.
 
 ### Backend API
 
-FastAPI dipakai untuk endpoint utama, orkestrasi request, dan fondasi integrasi antar modul. Baseline saat ini sudah memiliki endpoint health, system summary, dan workspace overview.
+FastAPI dipakai untuk endpoint utama, orkestrasi request, dan fondasi integrasi antar modul. Baseline saat ini sudah memiliki endpoint health, system summary, auth, dan workspace overview.
 
 ### Worker
 
@@ -24,26 +24,27 @@ Worker Python dipakai untuk heartbeat dasar, scheduler, dan proses background ya
 
 ### Database
 
-PostgreSQL tetap menjadi penyimpanan utama untuk data pengguna, workspace, task, dan metadata dokumen. Integrasi database nyata belum diaktifkan; response workspace masih berupa seeded service layer agar kontrak API bisa ditinjau lebih awal.
+PostgreSQL tetap menjadi penyimpanan utama untuk data pengguna, workspace, task, dan metadata dokumen. Integrasi database nyata belum diaktifkan; auth dan workspace masih memakai seeded in-memory service layer agar kontrak API bisa direview lebih awal.
 
 ### Cache / Queue
 
 Redis dipakai sebagai fondasi queue ringan dan state sementara untuk kebutuhan background process.
 
-## Scope Batch 3
+## Scope Batch 4
 
-Batch ini mendorong repo dari scaffold generik menuju vertical slice tipis yang sudah bisa ditelusuri dari UI ke API:
+Batch ini mendorong repo dari vertical slice publik ke slice yang sudah punya konteks user:
 
-- backend FastAPI memiliki route `workspaces`
-- service layer dan schema baseline untuk workspace overview
-- homepage Next.js membaca data overview dari backend
-- docker compose mendukung server-side fetch frontend ke backend
-- dokumen scope MVP diperjelas
+- backend FastAPI memiliki route `auth`
+- utility token bearer ringan berbasis secret aplikasi
+- service auth seeded untuk register, login, dan current user
+- route `workspaces` sekarang membutuhkan user aktif
+- homepage Next.js melakukan demo login sebelum memanggil overview workspace
+- compose dan env example mendukung kredensial demo lokal
 
 ## Langkah Berikutnya
 
-- auth dan ownership per workspace
-- persistence dengan PostgreSQL
-- task scheduler yang lebih nyata
+- persistence auth dan workspace ke PostgreSQL
+- migrasi dari token ringan ke JWT yang lebih standar bila diperlukan
+- task CRUD dengan relasi ke workspace owner
 - integrasi dokumen dan memory
 - observability dasar untuk run history
