@@ -4,6 +4,7 @@ from app.services.document_service import (
     list_documents_for_user_workspace,
     upload_document_for_workspace,
 )
+from app.services.scheduler_service import execute_scheduler_tick
 from app.services.task_service import (
     create_task_for_workspace,
     delete_task_for_user,

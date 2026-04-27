@@ -82,6 +82,13 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - demo seed untuk scheduler harian dan agent run history
 - highlight overview diperluas agar observability jadi bagian dari baseline MVP
 
+### Batch 10
+
+- worker memanggil endpoint internal backend untuk scheduler tick berkala
+- scheduler run dan agent run baru sekarang bisa dibuat oleh worker, bukan hanya seed demo
+- token worker sederhana ditambahkan untuk melindungi route internal MVP
+- compose dan `.env.example` diperbarui untuk interval scheduler dan token worker
+
 ## Struktur Folder
 
 ```text
@@ -183,10 +190,11 @@ docker compose down
 - `GET /api/v1/workspaces/{workspace_id}/activity-logs`
 - `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
 - `GET /api/v1/workspaces/{workspace_id}/agent-runs`
+- `POST /api/v1/internal/scheduler/tick`
 
 ## Prioritas Batch Berikutnya
 
 - document retrieval context
-- worker execution untuk scheduler reminder yang benar-benar berjalan
 - trigger manual scheduler dari dashboard
+- rule scheduler yang lebih cerdas per workspace
 - migrasi token ringan ke JWT standar bila dibutuhkan

@@ -16,6 +16,7 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `app/services/document_service.py` untuk upload file dan metadata dokumen
 - `app/services/activity_service.py` untuk audit trail activity log workspace
 - `app/services/run_history_service.py` untuk histori scheduler run dan agent run
+- `app/services/scheduler_service.py` untuk eksekusi scheduler tick dari worker
 - `migrations/` + `alembic.ini` untuk migration awal
 - `requirements.txt` untuk dependency backend
 
@@ -41,6 +42,7 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `GET /api/v1/workspaces/{workspace_id}/activity-logs`
 - `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
 - `GET /api/v1/workspaces/{workspace_id}/agent-runs`
+- `POST /api/v1/internal/scheduler/tick`
 
 ## Cara jalan lokal
 
@@ -59,4 +61,4 @@ alembic upgrade head
 
 ## Catatan
 
-Auth, workspace, task, document metadata, activity log, serta run history sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, dan demo data observability akan dibuat otomatis saat alur auth dipanggil pertama kali setelah database siap.
+Auth, workspace, task, document metadata, activity log, serta run history sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, demo data observability tetap dibuat saat bootstrap awal, dan worker sudah bisa membuat scheduler run baru lewat route internal bertoken sederhana.

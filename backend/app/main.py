@@ -5,6 +5,7 @@ from app.api.routes.activity import router as activity_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.documents import router as document_router
 from app.api.routes.health import router as health_router
+from app.api.routes.internal import router as internal_router
 from app.api.routes.run_history import router as run_history_router
 from app.api.routes.tasks import router as task_router
 from app.api.routes.workspaces import router as workspace_router
@@ -33,6 +34,7 @@ app.include_router(task_router, prefix=settings.api_prefix)
 app.include_router(document_router, prefix=settings.api_prefix)
 app.include_router(activity_router, prefix=settings.api_prefix)
 app.include_router(run_history_router, prefix=settings.api_prefix)
+app.include_router(internal_router, prefix=settings.api_prefix)
 
 
 @app.get("/")
@@ -40,5 +42,5 @@ def root() -> dict[str, object]:
     return {
         "message": "AI Agent Workspace backend is running.",
         "docs": "/docs",
-        "modules": ["health", "auth", "workspaces", "tasks", "documents", "activity", "run-history"],
+        "modules": ["health", "auth", "workspaces", "tasks", "documents", "activity", "run-history", "internal"],
     }

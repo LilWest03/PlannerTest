@@ -21,4 +21,4 @@ from app.repositories.task_repository import (
     update_task,
 )
 from app.repositories.user_repository import create_user, get_user_by_email, get_user_by_id
-from app.repositories.workspace_repository import create_workspace, get_workspace_by_owner, list_workspaces_by_owner
+from app.repositories.workspace_repository import create_workspace, get_workspace_by_owner, list_workspaces, list_workspaces_by_owner

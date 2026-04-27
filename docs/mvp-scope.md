@@ -33,6 +33,7 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - document upload dan metadata persistence berbasis local storage + PostgreSQL
 - activity log baseline untuk auth, workspace, task, document, dan scheduler
 - scheduler run dan agent run history berbasis database
+- worker scheduler tick ringan yang menulis run baru ke backend
 
 ## Ditunda Setelah MVP Dasar Stabil
 
@@ -53,6 +54,6 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 ## Target Increment Berikutnya
 
 1. document retrieval context
-2. worker scheduler reminder yang benar-benar dieksekusi
-3. trigger manual run dari dashboard
+2. trigger manual run dari dashboard
+3. rule scheduler yang lebih kaya per workspace
 4. JWT standar dan hardening auth

@@ -4,6 +4,11 @@ from sqlalchemy.orm import Session
 from app.models import Workspace
 
 
+def list_workspaces(db: Session) -> list[Workspace]:
+    statement = select(Workspace).order_by(Workspace.created_at.asc())
+    return list(db.execute(statement).scalars().all())
+
+
 def list_workspaces_by_owner(db: Session, owner_id: str) -> list[Workspace]:
     statement = select(Workspace).where(Workspace.owner_id == owner_id).order_by(Workspace.created_at.asc())
     return list(db.execute(statement).scalars().all())
