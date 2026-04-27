@@ -13,6 +13,7 @@ from app.repositories import (
 )
 from app.schemas.auth import AuthUser
 from app.schemas.document import DocumentCreateRequest, DocumentItem, DocumentUploadResponse
+from app.services.activity_service import record_activity
 from app.services.demo_seed_service import ensure_demo_state
 
 
@@ -101,5 +102,16 @@ def upload_document_for_workspace(
         storage_path=str(relative_storage_path / stored_filename),
         size_bytes=len(content),
         processing_status="uploaded",
+    )
+    record_activity(
+        db,
+        workspace_id=workspace_id,
+        actor_user_id=user.id,
+        category="document",
+        action="document.uploaded",
+        summary=f"Dokumen {document.title} diunggah ke workspace.",
+        entity_type="document",
+        entity_id=document.id,
+        metadata_json={"content_type": document.content_type, "size_bytes": document.size_bytes},
     )
     return _to_document_upload_response(document)

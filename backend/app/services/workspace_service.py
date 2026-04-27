@@ -19,6 +19,7 @@ from app.schemas.workspace import (
     WorkspaceStats,
     WorkspaceTask,
 )
+from app.services.activity_service import record_activity
 from app.services.demo_seed_service import ensure_demo_state
 
 
@@ -97,6 +98,11 @@ def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
                 detail=f"{document_count} dokumen sudah tercatat dan siap dipakai untuk indexing lanjutan.",
                 category="documents",
             ),
+            WorkspaceHighlight(
+                title="Observability dasar aktif",
+                detail="Activity log, scheduler run, dan agent run history siap dipakai untuk audit trail MVP.",
+                category="observability",
+            ),
         ],
     )
 
@@ -110,5 +116,16 @@ def create_workspace(db: Session, payload: WorkspaceCreateRequest, user: AuthUse
         name=payload.name,
         description=payload.description,
         focus_mode=payload.focus_mode,
+    )
+    record_activity(
+        db,
+        workspace_id=workspace.id,
+        actor_user_id=user.id,
+        category="workspace",
+        action="workspace.created",
+        summary=f"Workspace {workspace.name} dibuat untuk ritme kerja akademik baru.",
+        entity_type="workspace",
+        entity_id=workspace.id,
+        metadata_json={"focus_mode": workspace.focus_mode},
     )
     return _to_workspace_item(workspace)

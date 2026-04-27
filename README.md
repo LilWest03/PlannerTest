@@ -74,6 +74,14 @@ Repositori ini disiapkan sebagai fondasi implementasi bertahap untuk sistem yang
 - endpoint list/upload/detail dokumen per workspace
 - seeded demo documents agar overview workspace punya data dokumen nyata
 
+### Batch 9
+
+- activity log baseline untuk auth, workspace, task, document, dan scheduler
+- model dan migration `activity_logs`, `scheduler_runs`, dan `agent_runs`
+- endpoint histori `activity-logs`, `scheduler-runs`, dan `agent-runs` per workspace
+- demo seed untuk scheduler harian dan agent run history
+- highlight overview diperluas agar observability jadi bagian dari baseline MVP
+
 ## Struktur Folder
 
 ```text
@@ -172,11 +180,13 @@ docker compose down
 - `GET /api/v1/workspaces/{workspace_id}/documents`
 - `POST /api/v1/workspaces/{workspace_id}/documents`
 - `GET /api/v1/documents/{document_id}`
+- `GET /api/v1/workspaces/{workspace_id}/activity-logs`
+- `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
+- `GET /api/v1/workspaces/{workspace_id}/agent-runs`
 
 ## Prioritas Batch Berikutnya
 
-- activity log dasar
-- scheduler reminder harian
-- agent run history
 - document retrieval context
+- worker execution untuk scheduler reminder yang benar-benar berjalan
+- trigger manual scheduler dari dashboard
 - migrasi token ringan ke JWT standar bila dibutuhkan

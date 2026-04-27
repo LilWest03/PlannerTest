@@ -6,13 +6,18 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.security import hash_password
 from app.repositories import (
+    count_activity_logs_for_workspace,
+    create_activity_log,
+    create_agent_run,
     create_document,
+    create_scheduler_run,
     create_task,
     create_user,
     create_workspace,
     get_document_by_filename,
     get_user_by_email,
     get_workspace_by_owner,
+    list_agent_runs_for_workspace,
     list_tasks_for_workspace,
 )
 
@@ -139,9 +144,131 @@ def ensure_demo_documents(db: Session, *, workspace_id: str, owner_id: str) -> N
         )
 
 
+def ensure_demo_scheduler_runs(db: Session, *, workspace_id: str, owner_id: str) -> None:
+    existing_runs = list_agent_runs_for_workspace(db, workspace_id, limit=1)
+    if existing_runs:
+        return
+
+    now = datetime.now(UTC)
+    scheduler_run = create_scheduler_run(
+        db,
+        scheduler_run_id="srun-demo-1",
+        workspace_id=workspace_id,
+        owner_id=owner_id,
+        job_name="daily-reminder",
+        trigger_type="scheduled",
+        status="success",
+        summary="Scheduler harian memeriksa deadline dekat dan menyiapkan rangkuman aktivitas workspace.",
+        started_at=now - timedelta(minutes=12),
+        finished_at=now - timedelta(minutes=11),
+    )
+
+    create_agent_run(
+        db,
+        agent_run_id="arun-demo-1",
+        scheduler_run_id=scheduler_run.id,
+        workspace_id=workspace_id,
+        owner_id=owner_id,
+        agent_key="deadline-brief",
+        agent_name="Deadline Brief Agent",
+        status="success",
+        target_type="task",
+        target_id="task-demo-1",
+        summary="Agent meninjau task prioritas yang jatuh tempo hari ini.",
+        output_summary="Ringkasan prioritas berhasil dibuat untuk task Finalkan ringkasan Bab 2.",
+        started_at=now - timedelta(minutes=12),
+        finished_at=now - timedelta(minutes=11, seconds=25),
+    )
+    create_agent_run(
+        db,
+        agent_run_id="arun-demo-2",
+        scheduler_run_id=scheduler_run.id,
+        workspace_id=workspace_id,
+        owner_id=owner_id,
+        agent_key="study-rhythm",
+        agent_name="Study Rhythm Agent",
+        status="success",
+        target_type="workspace",
+        target_id=workspace_id,
+        summary="Agent menyusun saran ritme belajar dari task dan dokumen aktif.",
+        output_summary="Agent menyarankan sesi fokus 90 menit dan review dokumen setelah makan siang.",
+        started_at=now - timedelta(minutes=11, seconds=20),
+        finished_at=now - timedelta(minutes=11),
+    )
+
+
+def ensure_demo_activity_logs(db: Session, *, workspace_id: str, owner_id: str) -> None:
+    if count_activity_logs_for_workspace(db, workspace_id) > 0:
+        return
+
+    logs = [
+        {
+            "activity_log_id": "alog-demo-1",
+            "category": "auth",
+            "action": "auth.logged_in",
+            "summary": "Demo Mahasiswa login ke workspace dan memulai sesi kerja.",
+            "entity_type": "user",
+            "entity_id": owner_id,
+            "metadata_json": {"channel": "demo-login"},
+        },
+        {
+            "activity_log_id": "alog-demo-2",
+            "category": "workspace",
+            "action": "workspace.synced",
+            "summary": "Workspace demo diselaraskan dengan data task dan dokumen terbaru.",
+            "entity_type": "workspace",
+            "entity_id": workspace_id,
+            "metadata_json": {"source": "seed"},
+        },
+        {
+            "activity_log_id": "alog-demo-3",
+            "category": "task",
+            "action": "task.created",
+            "summary": "Task prioritas Finalkan ringkasan Bab 2 masuk ke daftar kerja.",
+            "entity_type": "task",
+            "entity_id": "task-demo-1",
+            "metadata_json": {"priority": "high"},
+        },
+        {
+            "activity_log_id": "alog-demo-4",
+            "category": "document",
+            "action": "document.indexed",
+            "summary": "Dokumen Ringkasan Metodologi selesai dicatat untuk indexing awal.",
+            "entity_type": "document",
+            "entity_id": "doc-demo-1",
+            "metadata_json": {"processing_status": "indexed"},
+        },
+        {
+            "activity_log_id": "alog-demo-5",
+            "category": "scheduler",
+            "action": "scheduler.completed",
+            "summary": "Scheduler harian selesai menjalankan rangkaian reminder dan agent run.",
+            "entity_type": "scheduler_run",
+            "entity_id": "srun-demo-1",
+            "metadata_json": {"status": "success"},
+        },
+    ]
+
+    for item in logs:
+        create_activity_log(
+            db,
+            activity_log_id=item["activity_log_id"],
+            workspace_id=workspace_id,
+            actor_user_id=owner_id,
+            category=item["category"],
+            action=item["action"],
+            summary=item["summary"],
+            entity_type=item["entity_type"],
+            entity_id=item["entity_id"],
+            metadata_json=item["metadata_json"],
+        )
+
+
 def ensure_demo_state(db: Session):
     user = ensure_demo_user(db)
     workspace = ensure_demo_workspace(db, user.id)
     ensure_demo_tasks(db, workspace_id=workspace.id, owner_id=user.id)
     ensure_demo_documents(db, workspace_id=workspace.id, owner_id=user.id)
+    ensure_demo_scheduler_runs(db, workspace_id=workspace.id, owner_id=user.id)
+    ensure_demo_activity_logs(db, workspace_id=workspace.id, owner_id=user.id)
     return user, workspace

@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import get_settings
 from app.models import Base
-from app.models import task, user, workspace  # noqa: F401
+from app.models import activity_log, agent_run, document, scheduler_run, task, user, workspace  # noqa: F401
 
 config = context.config
 settings = get_settings()

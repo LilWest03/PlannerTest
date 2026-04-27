@@ -15,6 +15,8 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - ringkasan dokumen berbasis AI secara manual
 - scheduler ringan untuk reminder dan review harian
 - activity log dasar
+- scheduler run history
+- agent run history
 
 ## Sudah Ada di Branch Scaffold
 
@@ -29,6 +31,8 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 - auth dan workspace service yang sudah memakai PostgreSQL baseline
 - task CRUD dasar berbasis database
 - document upload dan metadata persistence berbasis local storage + PostgreSQL
+- activity log baseline untuk auth, workspace, task, document, dan scheduler
+- scheduler run dan agent run history berbasis database
 
 ## Ditunda Setelah MVP Dasar Stabil
 
@@ -48,8 +52,7 @@ MVP difokuskan pada satu alur yang benar-benar berguna untuk mahasiswa: melihat 
 
 ## Target Increment Berikutnya
 
-1. activity log dasar
-2. scheduler reminder harian
-3. agent run history
-4. document retrieval context
-5. JWT standar dan hardening auth
+1. document retrieval context
+2. worker scheduler reminder yang benar-benar dieksekusi
+3. trigger manual run dari dashboard
+4. JWT standar dan hardening auth

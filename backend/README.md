@@ -9,11 +9,13 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `app/core/config.py` untuk konfigurasi environment
 - `app/core/database.py` untuk engine dan session SQLAlchemy
 - `app/core/security.py` untuk token bearer ringan scaffold
-- `app/models/` untuk model `users`, `workspaces`, `tasks`, dan `documents`
-- `app/repositories/` untuk akses data user, workspace, task, dan dokumen
+- `app/models/` untuk model `users`, `workspaces`, `tasks`, `documents`, `activity_logs`, `scheduler_runs`, dan `agent_runs`
+- `app/repositories/` untuk akses data user, workspace, task, dokumen, activity log, scheduler run, dan agent run
 - `app/services/demo_seed_service.py` untuk seed demo awal ke database dan local storage
 - `app/services/task_service.py` untuk task CRUD berbasis owner
 - `app/services/document_service.py` untuk upload file dan metadata dokumen
+- `app/services/activity_service.py` untuk audit trail activity log workspace
+- `app/services/run_history_service.py` untuk histori scheduler run dan agent run
 - `migrations/` + `alembic.ini` untuk migration awal
 - `requirements.txt` untuk dependency backend
 
@@ -36,6 +38,9 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `GET /api/v1/workspaces/{workspace_id}/documents`
 - `POST /api/v1/workspaces/{workspace_id}/documents`
 - `GET /api/v1/documents/{document_id}`
+- `GET /api/v1/workspaces/{workspace_id}/activity-logs`
+- `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
+- `GET /api/v1/workspaces/{workspace_id}/agent-runs`
 
 ## Cara jalan lokal
 
@@ -54,4 +59,4 @@ alembic upgrade head
 
 ## Catatan
 
-Auth, workspace, task, dan document metadata sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, dan demo data dokumen akan dibuat otomatis saat alur auth dipanggil pertama kali setelah database siap.
+Auth, workspace, task, document metadata, activity log, serta run history sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, dan demo data observability akan dibuat otomatis saat alur auth dipanggil pertama kali setelah database siap.

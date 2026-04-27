@@ -14,3 +14,6 @@ class User(TimestampMixin, Base):
 
     workspaces = relationship("Workspace", back_populates="owner", cascade="all, delete-orphan")
     tasks = relationship("Task", back_populates="owner", cascade="all, delete-orphan")
+    activity_logs = relationship("ActivityLog", back_populates="actor", cascade="all, delete-orphan")
+    scheduler_runs = relationship("SchedulerRun", back_populates="owner", cascade="all, delete-orphan")
+    agent_runs = relationship("AgentRun", back_populates="owner", cascade="all, delete-orphan")

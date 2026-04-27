@@ -28,12 +28,13 @@ def system_summary() -> dict[str, object]:
             "task and deadline tracking",
             "workspace overview",
             "agent orchestration baseline",
+            "activity log and run history baseline",
             "document processing roadmap",
             "workspace summary endpoint",
         ],
         "next_focus": [
-            "auth and workspace ownership",
-            "database integration",
-            "task scheduler",
+            "document retrieval context",
+            "worker-backed scheduler execution",
+            "auth hardening",
         ],
     }

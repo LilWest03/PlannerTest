@@ -4,8 +4,9 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, hash_password
-from app.repositories import get_user_by_email, get_user_by_id
+from app.repositories import get_user_by_email, get_user_by_id, get_workspace_by_owner
 from app.schemas.auth import AuthResponse, AuthUser, LoginRequest, RegisterRequest
+from app.services.activity_service import record_activity
 from app.services.demo_seed_service import ensure_demo_state
 
 
@@ -47,6 +48,19 @@ def authenticate_user(db: Session, payload: LoginRequest) -> AuthResponse:
             detail="Invalid email or password.",
         )
 
+    workspace = get_workspace_by_owner(db, user.id)
+    if workspace is not None:
+        record_activity(
+            db,
+            workspace_id=workspace.id,
+            actor_user_id=user.id,
+            category="auth",
+            action="auth.logged_in",
+            summary=f"Pengguna {user.name} berhasil login ke workspace.",
+            entity_type="user",
+            entity_id=user.id,
+            metadata_json={"email": user.email},
+        )
     return issue_auth_response(user)
 
 

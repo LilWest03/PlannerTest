@@ -1,3 +1,9 @@
+from app.repositories.activity_log_repository import (
+    count_activity_logs_for_workspace,
+    create_activity_log,
+    list_activity_logs_for_workspace,
+)
+from app.repositories.agent_run_repository import create_agent_run, list_agent_runs_for_workspace
 from app.repositories.document_repository import (
     count_documents_for_workspace,
     create_document,
@@ -5,6 +11,7 @@ from app.repositories.document_repository import (
     get_document_for_owner,
     list_documents_for_workspace,
 )
+from app.repositories.scheduler_run_repository import create_scheduler_run, list_scheduler_runs_for_workspace
 from app.repositories.task_repository import (
     create_task,
     delete_task,

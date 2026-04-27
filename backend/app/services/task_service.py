@@ -13,6 +13,7 @@ from app.repositories import (
 )
 from app.schemas.auth import AuthUser
 from app.schemas.task import TaskCreateRequest, TaskItem, TaskUpdateRequest
+from app.services.activity_service import record_activity
 from app.services.demo_seed_service import ensure_demo_state
 
 
@@ -67,6 +68,17 @@ def create_task_for_workspace(
         priority=payload.priority,
         due_at=payload.due_at,
     )
+    record_activity(
+        db,
+        workspace_id=workspace_id,
+        actor_user_id=user.id,
+        category="task",
+        action="task.created",
+        summary=f"Task {task.title} ditambahkan ke workspace.",
+        entity_type="task",
+        entity_id=task.id,
+        metadata_json={"status": task.status, "priority": task.priority},
+    )
     return _to_task_item(task)
 
 
@@ -98,6 +110,17 @@ def update_task_for_user(
         due_at=payload.due_at,
         due_at_provided="due_at" in payload.model_fields_set,
     )
+    record_activity(
+        db,
+        workspace_id=updated_task.workspace_id,
+        actor_user_id=user.id,
+        category="task",
+        action="task.updated",
+        summary=f"Task {updated_task.title} diperbarui di workspace.",
+        entity_type="task",
+        entity_id=updated_task.id,
+        metadata_json={"status": updated_task.status, "priority": updated_task.priority},
+    )
     return _to_task_item(updated_task)
 
 
@@ -106,4 +129,15 @@ def delete_task_for_user(db: Session, user: AuthUser, task_id: str) -> None:
     task = get_task_for_owner(db, task_id, user.id)
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found.")
+    record_activity(
+        db,
+        workspace_id=task.workspace_id,
+        actor_user_id=user.id,
+        category="task",
+        action="task.deleted",
+        summary=f"Task {task.title} dihapus dari workspace.",
+        entity_type="task",
+        entity_id=task.id,
+        metadata_json={"status": task.status},
+    )
     delete_task(db, task)
