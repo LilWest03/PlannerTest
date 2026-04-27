@@ -141,6 +141,9 @@ def ensure_demo_documents(db: Session, *, workspace_id: str, owner_id: str) -> N
             storage_path=str(base_relative / stored_filename),
             size_bytes=len(item["content"].encode("utf-8")),
             processing_status="indexed",
+            extracted_text=item["content"],
+            retrieval_preview=item["content"],
+            indexed_at=datetime.now(UTC),
         )
 
 
