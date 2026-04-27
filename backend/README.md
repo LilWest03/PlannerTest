@@ -42,6 +42,7 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `GET /api/v1/workspaces/{workspace_id}/activity-logs`
 - `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
 - `GET /api/v1/workspaces/{workspace_id}/agent-runs`
+- `POST /api/v1/workspaces/{workspace_id}/scheduler-runs/trigger`
 - `POST /api/v1/internal/scheduler/tick`
 
 ## Cara jalan lokal
