@@ -330,6 +330,34 @@ a {
   align-self: end;
 }
 
+.side-stack {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.manual-trigger {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(13, 138, 104, 0.24);
+  background: rgba(13, 138, 104, 0.12);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.retrieval-panel {
+  align-self: stretch;
+}
+
 @media (max-width: 980px) {
   .hero {
     grid-template-columns: 1fr;
@@ -354,6 +382,10 @@ a {
 
   .documents-header {
     align-items: start;
+    flex-direction: column;
+  }
+
+  .panel-header {
     flex-direction: column;
   }
 }
