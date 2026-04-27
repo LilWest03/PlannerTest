@@ -31,8 +31,10 @@ def _execute_scheduler_for_workspace(
 ) -> tuple[object, int]:
     tasks = list_tasks_for_workspace(db, workspace.id, limit=10)
     due_soon_tasks = [
-        task for task in tasks if task.due_at is not None and task.due_at <= now + timedelta(hours=24)
-    ][:2]
+        task
+        for task in tasks
+        if task.due_at is not None and task.due_at <= now + timedelta(hours=workspace.reminder_window_hours)
+    ][: workspace.max_tasks_per_run]
 
     scheduler_run = create_scheduler_run(
         db,
@@ -97,6 +99,8 @@ def _execute_scheduler_for_workspace(
             "job_name": scheduler_run.job_name,
             "trigger_type": trigger_type,
             "agent_runs_created": agent_runs_created,
+            "reminder_window_hours": workspace.reminder_window_hours,
+            "max_tasks_per_run": workspace.max_tasks_per_run,
         },
     )
     return scheduler_run, agent_runs_created
@@ -111,6 +115,8 @@ def execute_scheduler_tick(db: Session) -> dict[str, object]:
     now = datetime.now(UTC)
 
     for workspace in workspaces:
+        if not workspace.scheduler_enabled:
+            continue
         processed_workspaces += 1
         _, workspace_agent_runs = _execute_scheduler_for_workspace(
             db,
