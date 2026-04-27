@@ -81,3 +81,7 @@ def list_agent_history_for_workspace(
         )
     runs = list_agent_runs_for_workspace(db, workspace_id, limit=limit)
     return [_to_agent_run_item(run) for run in runs]
+
+
+def to_scheduler_run_item(scheduler_run) -> SchedulerRunItem:
+    return _to_scheduler_run_item(scheduler_run)
