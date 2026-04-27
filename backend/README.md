@@ -43,6 +43,8 @@ Scaffold backend menggunakan FastAPI untuk kebutuhan MVP awal.
 - `GET /api/v1/workspaces/{workspace_id}/scheduler-runs`
 - `GET /api/v1/workspaces/{workspace_id}/agent-runs`
 - `POST /api/v1/workspaces/{workspace_id}/scheduler-runs/trigger`
+- `GET /api/v1/workspaces/{workspace_id}/scheduler-settings`
+- `PUT /api/v1/workspaces/{workspace_id}/scheduler-settings`
 - `POST /api/v1/internal/scheduler/tick`
 
 ## Cara jalan lokal
@@ -62,4 +64,4 @@ alembic upgrade head
 
 ## Catatan
 
-Auth, workspace, task, document metadata, activity log, serta run history sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, demo data observability tetap dibuat saat bootstrap awal, dan worker sudah bisa membuat scheduler run baru lewat route internal bertoken sederhana.
+Auth, workspace, task, document metadata, activity log, serta run history sekarang sudah memakai PostgreSQL baseline. File upload disimpan ke local storage awal sesuai `STORAGE_PATH`, demo data observability tetap dibuat saat bootstrap awal, worker sudah bisa membuat scheduler run baru lewat route internal bertoken sederhana, dan tiap workspace kini punya rule scheduler ringan untuk `enabled`, horizon reminder, dan batas task per run.
