@@ -234,6 +234,10 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
 async function getDemoToken(): Promise<AuthResponse | null> {
   try {
     const response = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
@@ -348,6 +352,46 @@ async function triggerManualSchedulerRun(workspaceId: string) {
   revalidatePath("/");
 }
 
+async function updateWorkspaceSchedulerSettings(workspaceId: string, formData: FormData) {
+  "use server";
+
+  const auth = await getDemoToken();
+  if (!auth) {
+    throw new Error("Demo auth unavailable");
+  }
+
+  const reminderWindowHours = clampNumber(
+    Number.parseInt(String(formData.get("reminder_window_hours") ?? "24"), 10) || 24,
+    1,
+    168,
+  );
+  const maxTasksPerRun = clampNumber(
+    Number.parseInt(String(formData.get("max_tasks_per_run") ?? "2"), 10) || 2,
+    1,
+    10,
+  );
+
+  const response = await fetch(`${apiBaseUrl}/api/v1/workspaces/${workspaceId}/scheduler-settings`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${auth.access_token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      scheduler_enabled: formData.get("scheduler_enabled") === "on",
+      reminder_window_hours: reminderWindowHours,
+      max_tasks_per_run: maxTasksPerRun,
+    }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update scheduler settings");
+  }
+
+  revalidatePath("/");
+}
+
 export default async function Home() {
   const { overview, demoUserName, documents, schedulerRuns } = await getWorkspaceSnapshot();
   const stats = [
@@ -455,6 +499,50 @@ export default async function Home() {
                       </button>
                     </form>
                   </div>
+                  <form
+                    className="scheduler-settings-form"
+                    action={updateWorkspaceSchedulerSettings.bind(null, overview.workspace.id)}
+                  >
+                    <label className="scheduler-toggle">
+                      <input
+                        defaultChecked={overview.scheduler_settings.scheduler_enabled}
+                        name="scheduler_enabled"
+                        type="checkbox"
+                      />
+                      <span>Auto scheduler aktif</span>
+                    </label>
+                    <div className="scheduler-settings-grid">
+                      <label className="scheduler-field">
+                        <span>Horizon reminder</span>
+                        <div className="scheduler-input-row">
+                          <input
+                            defaultValue={overview.scheduler_settings.reminder_window_hours}
+                            max={168}
+                            min={1}
+                            name="reminder_window_hours"
+                            type="number"
+                          />
+                          <small>jam</small>
+                        </div>
+                      </label>
+                      <label className="scheduler-field">
+                        <span>Maks task per run</span>
+                        <div className="scheduler-input-row">
+                          <input
+                            defaultValue={overview.scheduler_settings.max_tasks_per_run}
+                            max={10}
+                            min={1}
+                            name="max_tasks_per_run"
+                            type="number"
+                          />
+                          <small>task</small>
+                        </div>
+                      </label>
+                    </div>
+                    <button className="settings-submit" type="submit">
+                      Simpan Rule
+                    </button>
+                  </form>
                   <div className="timeline-list">
                     {schedulerRuns.map((item) => (
                       <div className="timeline-item" key={item.id}>
