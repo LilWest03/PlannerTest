@@ -13,4 +13,10 @@ from app.services.task_service import (
     list_tasks_for_user_workspace,
     update_task_for_user,
 )
-from app.services.workspace_service import create_workspace, get_workspace_overview, list_workspaces
+from app.services.workspace_service import (
+    create_workspace,
+    get_workspace_overview,
+    get_workspace_scheduler_settings,
+    list_workspaces,
+    update_workspace_scheduler_settings,
+)
