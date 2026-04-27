@@ -19,6 +19,11 @@ def get_workspace_by_owner(db: Session, owner_id: str) -> Workspace | None:
     return db.execute(statement).scalars().first()
 
 
+def get_workspace_for_owner(db: Session, workspace_id: str, owner_id: str) -> Workspace | None:
+    statement = select(Workspace).where(Workspace.id == workspace_id, Workspace.owner_id == owner_id)
+    return db.execute(statement).scalar_one_or_none()
+
+
 def create_workspace(
     db: Session,
     *,
@@ -35,6 +40,27 @@ def create_workspace(
         description=description,
         focus_mode=focus_mode,
     )
+    db.add(workspace)
+    db.commit()
+    db.refresh(workspace)
+    return workspace
+
+
+def update_workspace_scheduler_settings(
+    db: Session,
+    workspace: Workspace,
+    *,
+    scheduler_enabled: bool | None,
+    reminder_window_hours: int | None,
+    max_tasks_per_run: int | None,
+) -> Workspace:
+    if scheduler_enabled is not None:
+        workspace.scheduler_enabled = scheduler_enabled
+    if reminder_window_hours is not None:
+        workspace.reminder_window_hours = reminder_window_hours
+    if max_tasks_per_run is not None:
+        workspace.max_tasks_per_run = max_tasks_per_run
+
     db.add(workspace)
     db.commit()
     db.refresh(workspace)
