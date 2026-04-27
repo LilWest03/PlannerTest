@@ -14,6 +14,8 @@ from app.schemas.workspace import (
     WorkspaceHighlight,
     WorkspaceItem,
     WorkspaceOverview,
+    WorkspaceSchedulerSettings,
+    WorkspaceSchedulerSettingsUpdateRequest,
     WorkspaceStats,
     WorkspaceTask,
 )
