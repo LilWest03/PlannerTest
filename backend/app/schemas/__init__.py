@@ -7,7 +7,7 @@ from app.schemas.document import (
     DocumentItem,
     DocumentUploadResponse,
 )
-from app.schemas.run_history import AgentRunItem, SchedulerRunItem
+from app.schemas.run_history import AgentRunItem, SchedulerRunItem, SchedulerTriggerResponse
 from app.schemas.task import TaskCreateRequest, TaskItem, TaskSummary, TaskUpdateRequest
 from app.schemas.workspace import (
     WorkspaceCreateRequest,
