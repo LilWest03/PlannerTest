@@ -17,7 +17,15 @@ type WorkspaceOverview = {
     description: string;
     focus_mode: string;
     owner_id: string;
+    scheduler_enabled: boolean;
+    reminder_window_hours: number;
+    max_tasks_per_run: number;
     updated_at: string;
+  };
+  scheduler_settings: {
+    scheduler_enabled: boolean;
+    reminder_window_hours: number;
+    max_tasks_per_run: number;
   };
   stats: {
     active_tasks: number;
@@ -77,7 +85,15 @@ const fallbackOverview: WorkspaceOverview = {
     description: "Ruang kerja untuk tugas, ringkasan dokumen, dan ritme pengerjaan skripsi.",
     focus_mode: "deadline-aware",
     owner_id: "user-demo",
+    scheduler_enabled: true,
+    reminder_window_hours: 24,
+    max_tasks_per_run: 2,
     updated_at: new Date().toISOString(),
+  },
+  scheduler_settings: {
+    scheduler_enabled: true,
+    reminder_window_hours: 24,
+    max_tasks_per_run: 2,
   },
   stats: {
     active_tasks: 6,
@@ -425,6 +441,12 @@ export default async function Home() {
                       <p>
                         Jalankan refresh singkat untuk memperbarui shortlist deadline dan histori
                         run workspace.
+                      </p>
+                      <p>
+                        Rule aktif:{" "}
+                        {overview.scheduler_settings.scheduler_enabled ? "auto aktif" : "auto nonaktif"} · horizon{" "}
+                        {overview.scheduler_settings.reminder_window_hours} jam · max{" "}
+                        {overview.scheduler_settings.max_tasks_per_run} task per run
                       </p>
                     </div>
                     <form action={triggerManualSchedulerRun.bind(null, overview.workspace.id)}>
