@@ -2,6 +2,7 @@ from app.services.auth_service import authenticate_user, get_user_by_id_for_auth
 from app.services.document_service import (
     get_document_detail,
     list_documents_for_user_workspace,
+    search_document_context_for_workspace,
     upload_document_for_workspace,
 )
 from app.services.scheduler_service import execute_scheduler_tick
