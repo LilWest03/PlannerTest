@@ -38,6 +38,22 @@ type WorkspaceOverview = {
   }>;
 };
 
+type DocumentItem = {
+  id: string;
+  workspace_id: string;
+  owner_id: string;
+  title: string;
+  original_filename: string;
+  content_type: string;
+  size_bytes: number;
+  processing_status: string;
+  retrieval_preview: string | null;
+  indexed_at: string | null;
+  retrieval_ready: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 const fallbackOverview: WorkspaceOverview = {
   workspace: {
     id: "ws-user-demo",
@@ -51,7 +67,7 @@ const fallbackOverview: WorkspaceOverview = {
     active_tasks: 6,
     due_today: 2,
     active_agents: 3,
-    indexed_documents: 18,
+    indexed_documents: 2,
   },
   upcoming_tasks: [
     {
@@ -86,8 +102,8 @@ const fallbackOverview: WorkspaceOverview = {
       category: "scheduler",
     },
     {
-      title: "Dokumen terbaru terindeks",
-      detail: "Tiga referensi skripsi baru siap dipakai untuk tanya jawab berbasis dokumen.",
+      title: "Retrieval context aktif",
+      detail: "Dokumen teks dan PDF sederhana sekarang bisa disiapkan menjadi context retrieval dasar.",
       category: "documents",
     },
     {
@@ -97,6 +113,39 @@ const fallbackOverview: WorkspaceOverview = {
     },
   ],
 };
+
+const fallbackDocuments: DocumentItem[] = [
+  {
+    id: "doc-demo-1",
+    workspace_id: "ws-user-demo",
+    owner_id: "user-demo",
+    title: "Ringkasan Metodologi",
+    original_filename: "ringkasan-metodologi.txt",
+    content_type: "text/plain",
+    size_bytes: 61,
+    processing_status: "indexed",
+    retrieval_preview: "Ringkasan metodologi penelitian untuk workspace demo mahasiswa.",
+    indexed_at: new Date().toISOString(),
+    retrieval_ready: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "doc-demo-2",
+    workspace_id: "ws-user-demo",
+    owner_id: "user-demo",
+    title: "Catatan Literatur NLP",
+    original_filename: "catatan-literatur-nlp.txt",
+    content_type: "text/plain",
+    size_bytes: 71,
+    processing_status: "indexed",
+    retrieval_preview: "Catatan literatur NLP dasar untuk review literatur dan indexing awal.",
+    indexed_at: new Date().toISOString(),
+    retrieval_ready: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+];
 
 const apiBaseUrl =
   process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -110,6 +159,18 @@ function formatDateTime(value: string) {
     timeStyle: "short",
     timeZone: "Asia/Jakarta",
   }).format(new Date(value));
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 async function getDemoToken(): Promise<AuthResponse | null> {
@@ -136,38 +197,59 @@ async function getDemoToken(): Promise<AuthResponse | null> {
   }
 }
 
-async function getWorkspaceOverview(): Promise<{ overview: WorkspaceOverview; demoUserName: string }> {
+async function getWorkspaceSnapshot(): Promise<{
+  overview: WorkspaceOverview;
+  demoUserName: string;
+  documents: DocumentItem[];
+}> {
   try {
     const auth = await getDemoToken();
     if (!auth) {
       throw new Error("Demo auth unavailable");
     }
 
-    const response = await fetch(`${apiBaseUrl}/api/v1/workspaces/overview`, {
+    const overviewResponse = await fetch(`${apiBaseUrl}/api/v1/workspaces/overview`, {
       cache: "no-store",
       headers: {
         Authorization: `Bearer ${auth.access_token}`,
       },
     });
 
-    if (!response.ok) {
+    if (!overviewResponse.ok) {
       throw new Error("Failed to fetch workspace overview");
     }
 
+    const overview = (await overviewResponse.json()) as WorkspaceOverview;
+    const documentsResponse = await fetch(
+      `${apiBaseUrl}/api/v1/workspaces/${overview.workspace.id}/documents`,
+      {
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`,
+        },
+      },
+    );
+
+    const documents = documentsResponse.ok
+      ? ((await documentsResponse.json()) as DocumentItem[])
+      : fallbackDocuments;
+
     return {
-      overview: (await response.json()) as WorkspaceOverview,
+      overview,
       demoUserName: auth.user.name,
+      documents,
     };
   } catch {
     return {
       overview: fallbackOverview,
       demoUserName: "Demo Mahasiswa",
+      documents: fallbackDocuments,
     };
   }
 }
 
 export default async function Home() {
-  const { overview, demoUserName } = await getWorkspaceOverview();
+  const { overview, demoUserName, documents } = await getWorkspaceSnapshot();
   const stats = [
     {
       label: "Task aktif",
@@ -182,10 +264,11 @@ export default async function Home() {
       value: `${overview.stats.active_agents}`,
     },
     {
-      label: "Dokumen terindeks",
+      label: "Dokumen siap retrieval",
       value: `${overview.stats.indexed_documents}`,
     },
   ];
+  const indexedDocuments = documents.filter((item) => item.retrieval_ready);
 
   return (
     <main className="page">
@@ -232,8 +315,8 @@ export default async function Home() {
                 <div>
                   <h2>Task Prioritas</h2>
                   <p>
-                    Homepage sekarang login dengan akun demo seeded lebih dulu, lalu mengambil
-                    overview workspace yang sudah diproteksi bearer token.
+                    Dashboard sekarang sudah membaca jumlah dokumen yang benar-benar siap dipakai
+                    untuk retrieval context, bukan sekadar total upload mentah.
                   </p>
                 </div>
 
@@ -251,22 +334,56 @@ export default async function Home() {
               </div>
 
               <div className="timeline-panel">
-                <h3>Highlight Agent</h3>
+                <h3>Retrieval Context</h3>
                 <p>
-                  Ownership workspace sekarang sudah diikat ke user aktif, jadi batch berikutnya
-                  tinggal meneruskan model ini ke database dan task CRUD.
+                  Upload teks dan PDF sederhana kini langsung membentuk preview context dasar untuk
+                  kebutuhan agent, pencarian, dan rangkuman akademik.
                 </p>
                 <div className="timeline-list">
-                  {overview.highlights.map((item) => (
-                    <div className="timeline-item" key={`${item.category}-${item.title}`}>
+                  {indexedDocuments.slice(0, 3).map((item) => (
+                    <div className="timeline-item" key={item.id}>
                       <strong>{item.title}</strong>
-                      <span>{item.detail}</span>
+                      <span>{item.retrieval_preview ?? "Preview belum tersedia."}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="documents-band">
+        <div className="documents-header">
+          <div>
+            <div className="eyebrow">Document Retrieval</div>
+            <h2>Dokumen yang sudah siap jadi context</h2>
+          </div>
+          <p>
+            Batch ini menambahkan preview retrieval, status indexing, dan endpoint context search
+            dasar per workspace.
+          </p>
+        </div>
+
+        <div className="documents-grid">
+          {documents.map((item) => (
+            <article className="document-card" key={item.id}>
+              <div className="document-meta">
+                <span className={`document-badge ${item.retrieval_ready ? "ready" : "pending"}`}>
+                  {item.retrieval_ready ? "Retrieval Ready" : item.processing_status}
+                </span>
+                <span>{formatFileSize(item.size_bytes)}</span>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.retrieval_preview ?? "Dokumen belum punya context preview yang siap dipakai."}</p>
+              <div className="document-footer">
+                <span>{item.original_filename}</span>
+                <span>
+                  {item.indexed_at ? `Indexed ${formatDateTime(item.indexed_at)}` : "Menunggu indexing"}
+                </span>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
