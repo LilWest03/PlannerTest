@@ -33,3 +33,11 @@ class AgentRunItem(BaseModel):
     finished_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class SchedulerTriggerResponse(BaseModel):
+    status: str
+    workspace_id: str
+    scheduler_run: SchedulerRunItem
+    agent_runs_created: int
+    executed_at: datetime
