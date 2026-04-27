@@ -31,11 +31,21 @@ class WorkspaceItem(BaseModel):
     description: str
     focus_mode: str
     owner_id: str
+    scheduler_enabled: bool
+    reminder_window_hours: int = Field(..., ge=1, le=168)
+    max_tasks_per_run: int = Field(..., ge=1, le=10)
     updated_at: datetime
+
+
+class WorkspaceSchedulerSettings(BaseModel):
+    scheduler_enabled: bool
+    reminder_window_hours: int = Field(..., ge=1, le=168)
+    max_tasks_per_run: int = Field(..., ge=1, le=10)
 
 
 class WorkspaceOverview(BaseModel):
     workspace: WorkspaceItem
+    scheduler_settings: WorkspaceSchedulerSettings
     stats: WorkspaceStats
     upcoming_tasks: list[WorkspaceTask]
     highlights: list[WorkspaceHighlight]
@@ -45,3 +55,9 @@ class WorkspaceCreateRequest(BaseModel):
     name: str = Field(..., min_length=3, max_length=100)
     description: str = Field(..., min_length=10, max_length=280)
     focus_mode: str = Field(default="balanced", min_length=3, max_length=40)
+
+
+class WorkspaceSchedulerSettingsUpdateRequest(BaseModel):
+    scheduler_enabled: bool | None = None
+    reminder_window_hours: int | None = Field(default=None, ge=1, le=168)
+    max_tasks_per_run: int | None = Field(default=None, ge=1, le=10)
