@@ -15,7 +15,7 @@ settings = get_settings()
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.6.0",
+    version="0.7.0",
     description="Backend API scaffold for AI Agent Workspace 24/7 untuk Mahasiswa.",
 )
 
