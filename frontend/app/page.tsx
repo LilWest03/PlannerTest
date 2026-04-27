@@ -1,3 +1,5 @@
+import { revalidatePath } from "next/cache";
+
 type AuthResponse = {
   access_token: string;
   token_type: string;
@@ -50,6 +52,20 @@ type DocumentItem = {
   retrieval_preview: string | null;
   indexed_at: string | null;
   retrieval_ready: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+type SchedulerRunItem = {
+  id: string;
+  workspace_id: string;
+  owner_id: string;
+  job_name: string;
+  trigger_type: string;
+  status: string;
+  summary: string;
+  started_at: string;
+  finished_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -147,6 +163,35 @@ const fallbackDocuments: DocumentItem[] = [
   },
 ];
 
+const fallbackSchedulerRuns: SchedulerRunItem[] = [
+  {
+    id: "srun-demo-latest",
+    workspace_id: "ws-user-demo",
+    owner_id: "user-demo",
+    job_name: "manual-refresh",
+    trigger_type: "manual",
+    status: "success",
+    summary: "Scheduler demo terakhir dijalankan manual untuk menyegarkan shortlist deadline dan ritme belajar.",
+    started_at: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+    finished_at: new Date(Date.now() - 20 * 60 * 1000 + 2000).toISOString(),
+    created_at: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "srun-demo-worker",
+    workspace_id: "ws-user-demo",
+    owner_id: "user-demo",
+    job_name: "daily-reminder",
+    trigger_type: "worker",
+    status: "success",
+    summary: "Worker demo mengecek deadline 24 jam dan menyiapkan agent run pengingat.",
+    started_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    finished_at: new Date(Date.now() - 3 * 60 * 60 * 1000 + 2000).toISOString(),
+    created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
 const apiBaseUrl =
   process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const browserApiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -201,6 +246,7 @@ async function getWorkspaceSnapshot(): Promise<{
   overview: WorkspaceOverview;
   demoUserName: string;
   documents: DocumentItem[];
+  schedulerRuns: SchedulerRunItem[];
 }> {
   try {
     const auth = await getDemoToken();
@@ -233,23 +279,61 @@ async function getWorkspaceSnapshot(): Promise<{
     const documents = documentsResponse.ok
       ? ((await documentsResponse.json()) as DocumentItem[])
       : fallbackDocuments;
+    const schedulerRunsResponse = await fetch(
+      `${apiBaseUrl}/api/v1/workspaces/${overview.workspace.id}/scheduler-runs?limit=4`,
+      {
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`,
+        },
+      },
+    );
+
+    const schedulerRuns = schedulerRunsResponse.ok
+      ? ((await schedulerRunsResponse.json()) as SchedulerRunItem[])
+      : fallbackSchedulerRuns;
 
     return {
       overview,
       demoUserName: auth.user.name,
       documents,
+      schedulerRuns,
     };
   } catch {
     return {
       overview: fallbackOverview,
       demoUserName: "Demo Mahasiswa",
       documents: fallbackDocuments,
+      schedulerRuns: fallbackSchedulerRuns,
     };
   }
 }
 
+async function triggerManualSchedulerRun(workspaceId: string) {
+  "use server";
+
+  const auth = await getDemoToken();
+  if (!auth) {
+    throw new Error("Demo auth unavailable");
+  }
+
+  const response = await fetch(`${apiBaseUrl}/api/v1/workspaces/${workspaceId}/scheduler-runs/trigger`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${auth.access_token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to trigger manual scheduler run");
+  }
+
+  revalidatePath("/");
+}
+
 export default async function Home() {
-  const { overview, demoUserName, documents } = await getWorkspaceSnapshot();
+  const { overview, demoUserName, documents, schedulerRuns } = await getWorkspaceSnapshot();
   const stats = [
     {
       label: "Task aktif",
@@ -333,19 +417,52 @@ export default async function Home() {
                 </div>
               </div>
 
-              <div className="timeline-panel">
-                <h3>Retrieval Context</h3>
-                <p>
-                  Upload teks dan PDF sederhana kini langsung membentuk preview context dasar untuk
-                  kebutuhan agent, pencarian, dan rangkuman akademik.
-                </p>
-                <div className="timeline-list">
-                  {indexedDocuments.slice(0, 3).map((item) => (
-                    <div className="timeline-item" key={item.id}>
-                      <strong>{item.title}</strong>
-                      <span>{item.retrieval_preview ?? "Preview belum tersedia."}</span>
+              <div className="side-stack">
+                <div className="timeline-panel">
+                  <div className="panel-header">
+                    <div>
+                      <h3>Scheduler Manual</h3>
+                      <p>
+                        Jalankan refresh singkat untuk memperbarui shortlist deadline dan histori
+                        run workspace.
+                      </p>
                     </div>
-                  ))}
+                    <form action={triggerManualSchedulerRun.bind(null, overview.workspace.id)}>
+                      <button className="manual-trigger" type="submit">
+                        Jalankan Sekarang
+                      </button>
+                    </form>
+                  </div>
+                  <div className="timeline-list">
+                    {schedulerRuns.map((item) => (
+                      <div className="timeline-item" key={item.id}>
+                        <strong>
+                          {item.trigger_type === "manual" ? "Manual Trigger" : "Worker Tick"} ·{" "}
+                          {item.job_name}
+                        </strong>
+                        <span>{item.summary}</span>
+                        <span>
+                          {item.status} · {formatDateTime(item.started_at)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="timeline-panel retrieval-panel">
+                  <h3>Retrieval Context</h3>
+                  <p>
+                    Upload teks dan PDF sederhana kini langsung membentuk preview context dasar
+                    untuk kebutuhan agent, pencarian, dan rangkuman akademik.
+                  </p>
+                  <div className="timeline-list">
+                    {indexedDocuments.slice(0, 3).map((item) => (
+                      <div className="timeline-item" key={item.id}>
+                        <strong>{item.title}</strong>
+                        <span>{item.retrieval_preview ?? "Preview belum tersedia."}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
