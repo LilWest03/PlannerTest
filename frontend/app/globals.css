@@ -354,6 +354,81 @@ a {
   cursor: pointer;
 }
 
+.scheduler-settings-form {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0 10px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 245, 0.74);
+}
+
+.scheduler-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.scheduler-toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.scheduler-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.scheduler-field {
+  display: grid;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.scheduler-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.scheduler-input-row input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0 12px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.scheduler-input-row small {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.settings-submit {
+  min-height: 40px;
+  width: fit-content;
+  padding: 0 16px;
+  border: 1px solid rgba(31, 42, 47, 0.18);
+  background: var(--ink);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 .retrieval-panel {
   align-self: stretch;
 }
@@ -387,6 +462,10 @@ a {
 
   .panel-header {
     flex-direction: column;
+  }
+
+  .scheduler-settings-grid {
+    grid-template-columns: 1fr;
   }
 }
 
