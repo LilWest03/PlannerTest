@@ -4,7 +4,7 @@ from uuid import uuid4
 from sqlalchemy.orm import Session
 
 from app.repositories import (
-    count_documents_for_workspace,
+    count_indexed_documents_for_workspace,
     create_workspace as create_workspace_record,
     get_workspace_by_owner,
     list_tasks_for_workspace,
@@ -54,7 +54,7 @@ def get_workspace_overview(db: Session, user: AuthUser) -> WorkspaceOverview:
         )
 
     tasks = list_tasks_for_workspace(db, workspace.id, limit=6)
-    document_count = count_documents_for_workspace(db, workspace.id)
+    document_count = count_indexed_documents_for_workspace(db, workspace.id)
     due_today = 0
     now = datetime.now(UTC).date()
     upcoming_tasks: list[WorkspaceTask] = []
